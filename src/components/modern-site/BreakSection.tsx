@@ -13,12 +13,11 @@ export const BreakSection: React.FC<BreakSectionProps> = ({ className = "", back
 
   return (
     <section 
-      className={`${sectionPaddingClass} text-gray-300 ${typography.tracking.tight} relative overflow-hidden ${className}`}
+      className={`${sectionPaddingClass} text-gray-300 ${typography.tracking.tight} relative overflow-hidden ${className} break-section-bg`}
       style={{
         backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
         backgroundColor: !backgroundImage ? '#1a1a1a' : undefined, // fallback dark gray if no image
       }}
     >

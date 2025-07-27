@@ -580,3 +580,26 @@ html {
     margin-right: 1.25rem !important;
   }
 }
+
+/* Break section background fixes for mobile Safari */
+.break-section-bg {
+  background-attachment: fixed;
+}
+
+@media (max-width: 768px) {
+  .break-section-bg {
+    background-attachment: scroll !important;
+  }
+}
+
+/* Additional mobile Safari fixes for background images */
+@media (max-width: 768px) {
+  .break-section-bg {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
+}
