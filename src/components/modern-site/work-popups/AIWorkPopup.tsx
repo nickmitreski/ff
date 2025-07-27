@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { colors, typography } from '../../../theme/theme';
-import { X, Bot, Mic, Image, Video, Phone, Users, Mail, Search, Send, Sparkles, Download, RefreshCw, Clock, AlertCircle } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { X, Bot, Mic, Image, Video, Phone, Users, Mail, Search, Send, Sparkles, Download, RefreshCw, Clock, AlertCircle, ArrowLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { callDeepseek } from '../../../lib/llm';
 import { supabase } from '../../../lib/supabase';
 
@@ -19,7 +19,7 @@ interface AITool {
 }
 
 const AIWorkPopup: React.FC<AIWorkPopupProps> = ({ onClose }) => {
-  const [activeTab, setActiveTab] = useState<string>('chatbot');
+  const [selectedTool, setSelectedTool] = useState<AITool | null>(null);
   const buttonColor = colors.primary.purple; // #9933FF
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   
@@ -90,8 +90,14 @@ const AIWorkPopup: React.FC<AIWorkPopupProps> = ({ onClose }) => {
       demoComponent: <AIAssistantDemo />
     }
   ];
-  
-  const activeToolData = aiTools.find(tool => tool.id === activeTab) || aiTools[0];
+
+  const handleToolSelect = (tool: AITool) => {
+    setSelectedTool(tool);
+  };
+
+  const handleBackToGrid = () => {
+    setSelectedTool(null);
+  };
   
   return (
     <motion.div
@@ -118,13 +124,31 @@ const AIWorkPopup: React.FC<AIWorkPopupProps> = ({ onClose }) => {
         }
         onClick={e => e.stopPropagation()}
       >
+        {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-800" 
-             style={{ background: `linear-gradient(90deg, #0a0a0a, ${activeToolData.color}40)` }}>
+             style={{ background: selectedTool ? `linear-gradient(90deg, #0a0a0a, ${selectedTool.color}40)` : 'linear-gradient(90deg, #0a0a0a, #9933FF40)' }}>
           <div className="flex items-center gap-3">
-            {activeToolData.icon}
-            <h2 className={`${typography.fontSize['2xl']} ${typography.fontFamily.light} ${typography.tracking.tight} text-white`}>
-              {activeToolData.title}
-            </h2>
+            {selectedTool ? (
+              <>
+                <button 
+                  onClick={handleBackToGrid}
+                  className="text-gray-400 hover:text-white transition-colors mr-2"
+                >
+                  <ArrowLeft size={20} />
+                </button>
+                {selectedTool.icon}
+                <h2 className={`${typography.fontSize['2xl']} ${typography.fontFamily.light} ${typography.tracking.tight} text-white`}>
+                  {selectedTool.title}
+                </h2>
+              </>
+            ) : (
+              <>
+                <Bot size={32} className="text-purple-400" />
+                <h2 className={`${typography.fontSize['2xl']} ${typography.fontFamily.light} ${typography.tracking.tight} text-white`}>
+                  AI Tools
+                </h2>
+              </>
+            )}
           </div>
           <button 
             onClick={onClose}
@@ -134,73 +158,76 @@ const AIWorkPopup: React.FC<AIWorkPopupProps> = ({ onClose }) => {
           </button>
         </div>
         
-        <div className={`flex ${isMobile ? 'flex-col' : ''} h-[70vh]`}>
-          {/* Sidebar with AI tools - Horizontal on mobile */}
-          {isMobile ? (
-            <div className="w-full border-b border-gray-800 p-2 overflow-x-auto bg-black/50">
-              <div className="flex gap-2">
-                {aiTools.map((tool) => (
-                  <button
-                    key={tool.id}
-                    className={`p-3 rounded-lg transition-colors flex flex-col items-center gap-1 min-w-[80px] ${
-                      activeTab === tool.id 
-                        ? 'bg-gray-800 text-white' 
-                        : 'text-gray-400 hover:bg-gray-900 hover:text-gray-300'
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveTab(tool.id);
-                    }}
-                  >
-                    <div style={{ color: tool.color }}>{tool.icon}</div>
-                    <span className="font-light tracking-tight text-xs text-center">{tool.title}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="w-64 border-r border-gray-800 p-4 overflow-y-auto bg-black/50">
-              <h3 className="text-gray-400 text-sm uppercase mb-4 font-light">AI Tools</h3>
-              <div className="space-y-2">
-                {aiTools.map((tool) => (
-                  <button
-                    key={tool.id}
-                    className={`w-full text-left p-3 rounded-lg transition-colors flex items-center gap-3 ${
-                      activeTab === tool.id 
-                        ? 'bg-gray-800 text-white' 
-                        : 'text-gray-400 hover:bg-gray-900 hover:text-gray-300'
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveTab(tool.id);
-                    }}
-                  >
-                    <div style={{ color: tool.color }}>{tool.icon}</div>
-                    <span className="font-light tracking-tight">{tool.title}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Main content area */}
-          <div className="flex-1 overflow-auto">
-            <div className="p-6">
-              <p className={`${typography.fontSize.lg} ${typography.fontFamily.light} ${typography.tracking.tight} text-gray-300 mb-6`}>
-                {activeToolData.description}
-              </p>
-              
-              {/* Demo component */}
-              <div className="bg-black/30 border border-gray-800 rounded-lg overflow-hidden">
-                {activeToolData.demoComponent}
-              </div>
-            </div>
-          </div>
+        {/* Content */}
+        <div className="h-[70vh] overflow-auto">
+          <AnimatePresence mode="wait">
+            {selectedTool ? (
+              // Tool Detail View
+              <motion.div
+                key="tool-detail"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="p-6"
+              >
+                <p className={`${typography.fontSize.lg} ${typography.fontFamily.light} ${typography.tracking.tight} text-gray-300 mb-6`}>
+                  {selectedTool.description}
+                </p>
+                
+                {/* Demo component */}
+                <div className="bg-black/30 border border-gray-800 rounded-lg overflow-hidden">
+                  {selectedTool.demoComponent}
+                </div>
+              </motion.div>
+            ) : (
+              // Tools Grid View
+              <motion.div
+                key="tools-grid"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="p-6"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {aiTools.map((tool) => (
+                    <motion.div
+                      key={tool.id}
+                      className="bg-black/30 border border-gray-800 rounded-lg p-6 hover:border-gray-700 transition-all duration-300 cursor-pointer group"
+                      whileHover={{ y: -5, scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleToolSelect(tool)}
+                      style={{
+                        background: `linear-gradient(135deg, rgba(0,0,0,0.3) 0%, ${tool.color}10 100%)`,
+                        borderColor: `${tool.color}40`
+                      }}
+                    >
+                      <div className="mb-4 flex items-center justify-between">
+                        <div style={{ color: tool.color }}>{tool.icon}</div>
+                        <div className="text-gray-500 group-hover:text-gray-300 transition-colors">
+                          <ArrowLeft size={16} className="rotate-180" />
+                        </div>
+                      </div>
+                      <h3 className={`${typography.fontSize.xl} ${typography.fontFamily.light} ${typography.tracking.tight} text-white mb-3`}>
+                        {tool.title}
+                      </h3>
+                      <p className={`${typography.fontSize.sm} ${typography.fontFamily.light} ${typography.tracking.tight} text-gray-400 leading-relaxed`}>
+                        {tool.description}
+                      </p>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         
+        {/* Footer */}
         <div className="p-6 border-t border-gray-800 flex justify-between items-center">
           <div className="text-gray-400 text-sm">
-            Try our AI tools and see how they can transform your business
+            {selectedTool 
+              ? `Explore ${selectedTool.title} and see how it can transform your business`
+              : 'Click on any AI tool to explore its capabilities and see live demos'
+            }
           </div>
           <button 
             onClick={onClose}
@@ -426,7 +453,7 @@ const ImageGenerationDemo: React.FC = () => {
           setPollingCount(prev => prev + 1);
           console.log(`Polling attempt ${pollingCount + 1} for demo generation ${generationId}`);
           
-          const { data, error } = await supabase
+          const { data, error } = await supabase()
             .from('replicate_generations')
             .select('*')
             .eq('id', generationId)
@@ -440,9 +467,9 @@ const ImageGenerationDemo: React.FC = () => {
             return;
           }
           
-          if (data.status === 'succeeded' && data.output && data.output.length > 0) {
+          if (data.status === 'succeeded' && data.output && Array.isArray(data.output) && data.output.length > 0) {
             console.log('Generation succeeded!', data.output[0]);
-            setGeneratedImage(data.output[0]);
+            setGeneratedImage(data.output[0] as string);
             setIsGenerating(false);
             clearInterval(interval);
             if (progressIntervalRef.current) {
@@ -452,7 +479,7 @@ const ImageGenerationDemo: React.FC = () => {
             setProgress(100);
           } else if (data.status === 'failed') {
             console.error('Generation failed:', data.error);
-            setError(data.error || 'Image generation failed');
+            setError((data.error as string) || 'Image generation failed');
             
             // Fallback for demo
             setTimeout(() => {
