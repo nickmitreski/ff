@@ -33,7 +33,7 @@ const ComingSoonEmailForm: React.FC<ComingSoonEmailFormProps> = ({ feature, colo
         .from('coming_soon_notifications')
         .insert({
           email: email.trim(),
-          feature: feature,
+          feature_name: feature,
           created_at: new Date().toISOString()
         });
 

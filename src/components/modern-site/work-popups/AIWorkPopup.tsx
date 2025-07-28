@@ -381,7 +381,7 @@ const VoicebotDemo: React.FC = () => {
         .from('coming_soon_notifications')
         .insert({
           email: email.trim(),
-          feature: 'AI Voicebot',
+          feature_name: 'AI Voicebot',
           created_at: new Date().toISOString()
         });
 
@@ -457,7 +457,7 @@ const ImageGenerationDemo: React.FC = () => {
         .from('coming_soon_notifications')
         .insert({
           email: email.trim(),
-          feature: 'Image Generation',
+          feature_name: 'Image Generation',
           created_at: new Date().toISOString()
         });
 
@@ -533,7 +533,7 @@ const VideoGenerationDemo: React.FC = () => {
         .from('coming_soon_notifications')
         .insert({
           email: email.trim(),
-          feature: 'Video Generation',
+          feature_name: 'Video Generation',
           created_at: new Date().toISOString()
         });
 
@@ -609,7 +609,7 @@ const VoiceSalesDemo: React.FC = () => {
         .from('coming_soon_notifications')
         .insert({
           email: email.trim(),
-          feature: 'Voice Sales Agent',
+          feature_name: 'Voice Sales Agent',
           created_at: new Date().toISOString()
         });
 
@@ -685,7 +685,7 @@ const LeadGeneratorDemo: React.FC = () => {
         .from('coming_soon_notifications')
         .insert({
           email: email.trim(),
-          feature: 'AI Lead Generator',
+          feature_name: 'AI Lead Generator',
           created_at: new Date().toISOString()
         });
 
@@ -761,7 +761,7 @@ const PhoneReceptionistDemo: React.FC = () => {
         .from('coming_soon_notifications')
         .insert({
           email: email.trim(),
-          feature: 'AI Phone Receptionist',
+          feature_name: 'AI Phone Receptionist',
           created_at: new Date().toISOString()
         });
 
@@ -837,7 +837,7 @@ const EmailSalesDemo: React.FC = () => {
         .from('coming_soon_notifications')
         .insert({
           email: email.trim(),
-          feature: 'Email Sales Agent',
+          feature_name: 'Email Sales Agent',
           created_at: new Date().toISOString()
         });
 
@@ -913,7 +913,7 @@ const AIPersonalAssistantDemo: React.FC = () => {
         .from('coming_soon_notifications')
         .insert({
           email: email.trim(),
-          feature: 'AI Personal Assistant',
+          feature_name: 'AI Personal Assistant',
           created_at: new Date().toISOString()
         });
 
