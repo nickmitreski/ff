@@ -11,6 +11,7 @@ interface IconProps {
 
 const Icon: React.FC<IconProps> = ({ name, icon, x, y, onOpen, singleClick }) => {
   const handleOpen = () => {
+    console.log(`[WINAMP DEBUG] Icon clicked:`, { name, icon, x, y });
     onOpen(name);
   };
   return (

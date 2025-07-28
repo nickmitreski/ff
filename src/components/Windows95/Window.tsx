@@ -84,13 +84,16 @@ const Window: React.FC<WindowProps> = ({
   }, [id, focusWindow]);
 
   // Debug logging for Winamp content
+  console.log(`[WINAMP DEBUG] Window component rendering:`, { id, title, hasContent: !!content, windowClass: `win95-window${id === 'winamp' ? ' winamp-window' : ''}${className ? ' ' + className : ''}` });
   if (title === 'Winamp' && content) {
+    console.log(`[WINAMP DEBUG] Winamp window has content, proceeding normally`);
     // Content is available, proceed normally
   }
   // Add unique class for Winamp window
   const windowClass = `win95-window${id === 'winamp' ? ' winamp-window' : ''}${className ? ' ' + className : ''}`;
   // Prevent rendering a blank Winamp window
   if (id === 'winamp' && !content) {
+    console.log(`[WINAMP DEBUG] Preventing blank Winamp window render`);
     return null;
   }
 

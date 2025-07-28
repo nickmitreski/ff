@@ -6,9 +6,14 @@ const WinampPlayer: React.FC = () => {
   const webampRef = useRef<Webamp | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    console.log(`[WINAMP DEBUG] WinampPlayer useEffect triggered`);
+    if (!containerRef.current) {
+      console.log(`[WINAMP DEBUG] No container ref, returning`);
+      return;
+    }
 
     const initWebamp = async () => {
+      console.log(`[WINAMP DEBUG] Initializing Webamp`);
       try {
         const webamp = new Webamp({
           initialTracks: [
@@ -25,14 +30,18 @@ const WinampPlayer: React.FC = () => {
 
         // Store webamp instance
         webampRef.current = webamp;
+        console.log(`[WINAMP DEBUG] Webamp instance created`);
 
         // Render Webamp
         if (containerRef.current) {
-        await webamp.renderWhenReady(containerRef.current);
+          console.log(`[WINAMP DEBUG] Rendering Webamp to container`);
+          await webamp.renderWhenReady(containerRef.current);
+          console.log(`[WINAMP DEBUG] Webamp rendered successfully`);
         }
 
         // Cleanup on unmount
         return () => {
+          console.log(`[WINAMP DEBUG] WinampPlayer cleanup`);
           if (webampRef.current) {
             webampRef.current.dispose();
           }
@@ -45,6 +54,7 @@ const WinampPlayer: React.FC = () => {
     initWebamp();
   }, []);
 
+  console.log(`[WINAMP DEBUG] WinampPlayer render`);
   return <div ref={containerRef} style={{ width: '100%', height: '100%' }} />;
 };
 

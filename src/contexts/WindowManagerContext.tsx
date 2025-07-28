@@ -15,10 +15,13 @@ import {
 function windowManagerReducer(state: WindowManagerState, action: WindowManagerActionType): WindowManagerState {
   switch (action.type) {
     case 'CREATE_WINDOW': {
+      console.log(`[WINAMP DEBUG] CREATE_WINDOW action for:`, action.payload.id, action.payload);
       const existing = state.windows.find(w => w.id === action.payload.id);
       if (existing) {
+        console.log(`[WINAMP DEBUG] Window ${action.payload.id} already exists, handling existing window`);
         // If minimized, restore it
         if (existing.state === 'minimized') {
+          console.log(`[WINAMP DEBUG] Restoring minimized window ${action.payload.id}`);
           return {
             ...state,
             windows: state.windows.map(w =>
@@ -31,6 +34,7 @@ function windowManagerReducer(state: WindowManagerState, action: WindowManagerAc
           };
         }
         // If already open, bring to front
+        console.log(`[WINAMP DEBUG] Bringing window ${action.payload.id} to front`);
         return {
           ...state,
           windows: state.windows.map(w =>
@@ -43,6 +47,7 @@ function windowManagerReducer(state: WindowManagerState, action: WindowManagerAc
         };
       }
       // Otherwise, create new window
+      console.log(`[WINAMP DEBUG] Creating new window ${action.payload.id}`);
       const newWindow: Window = {
         ...action.payload,
         state: 'normal',
@@ -60,6 +65,7 @@ function windowManagerReducer(state: WindowManagerState, action: WindowManagerAc
         zIndex: state.nextZIndex,
         isActive: true
       };
+      console.log(`[WINAMP DEBUG] New window created:`, newWindow);
       return {
         ...state,
         windows: [...state.windows.map(w => ({ ...w, isActive: false })), newWindow],

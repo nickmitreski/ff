@@ -103,6 +103,8 @@ const Desktop: React.FC<Windows95DesktopProps> = memo(({ onBack, setCurrentView 
 
   // Main handler to open apps/windows from desktop icons
   const handleOpenApp = useCallback((appId: string, content?: React.ReactNode, title?: string, positionOverride?: { x: number; y: number }, sizeOverride?: { width: number; height: number }) => {
+    console.log(`[WINAMP DEBUG] handleOpenApp called with:`, { appId, hasContent: !!content, title, positionOverride, sizeOverride });
+    
     if (appId && appId.toLowerCase().includes('comingsoon')) {
       sizeOverride = { width: 600, height: 332 };
     }
@@ -111,6 +113,7 @@ const Desktop: React.FC<Windows95DesktopProps> = memo(({ onBack, setCurrentView 
       return;
     }
     if (appId === 'winamp' && (!appData[appId] || appData[appId].contentType !== 'component' || !appData[appId].component)) {
+      console.warn('[DEFENSIVE] Winamp app data validation failed.');
       return;
     }
     posthog.capture('app_opened', { app_id: appId });
@@ -144,8 +147,18 @@ const Desktop: React.FC<Windows95DesktopProps> = memo(({ onBack, setCurrentView 
     const isFolder = appId.endsWith('Folder');
     const alwaysOnTop = isFolder ? true : (appData[appId]?.isAlwaysOnTop || false);
 
+    console.log(`[WINAMP DEBUG] About to create window for ${appId}:`, {
+      isFolder,
+      alwaysOnTop,
+      finalPosition,
+      finalSize,
+      contentType: appData[appId]?.contentType,
+      hasComponent: !!appData[appId]?.component
+    });
+
     // Special handling for ModernStatsPopup (statsPage)
     if (appId === 'statsPage') {
+      console.log(`[WINAMP DEBUG] Creating statsPage window`);
       createWindow({
         id: appId,
         title: title || appData[appId]?.name || appId,
@@ -167,6 +180,7 @@ const Desktop: React.FC<Windows95DesktopProps> = memo(({ onBack, setCurrentView 
         },
       });
     } else if (content !== undefined && title !== undefined) {
+      console.log(`[WINAMP DEBUG] Creating window with provided content for ${appId}`);
       createWindow({
         id: appId,
         title: title,
@@ -181,7 +195,11 @@ const Desktop: React.FC<Windows95DesktopProps> = memo(({ onBack, setCurrentView 
       });
     } else if (appData[appId]) {
       // Prevent blank Winamp window
-      if (appId === 'winamp') return;
+      if (appId === 'winamp') {
+        console.log(`[WINAMP DEBUG] Skipping Winamp creation in fallback branch`);
+        return;
+      }
+      console.log(`[WINAMP DEBUG] Creating window from appData for ${appId}`);
       createWindow({
         id: appId,
         title: title || appData[appId]?.name || appId,
