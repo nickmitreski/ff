@@ -14,6 +14,7 @@ import FinancialDashboard from './admin/FinancialDashboard';
 import SubscriptionManager from './admin/SubscriptionManager';
 import ComingSoonNotificationsManager from './admin/ComingSoonNotificationsManager';
 import SeoAudits from './admin/SeoAudits';
+import SeoAnalyzer from './admin/SeoAnalyzer';
 import { testGeminiApiKey, testOpenAIApiKey, testGrokApiKey, testDeepseekApiKey } from '../lib/llm';
 import posthog from 'posthog-js';
 
@@ -189,7 +190,7 @@ const AdminPage: React.FC = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // Data states
-  const [activeTab, setActiveTab] = useState<'analytics' | 'contacts' | 'supabase-status' | 'api-keys' | 'todos' | 'notes' | 'clients-jobs' | 'subscriptions' | 'financials' | 'coming-soon' | 'seo-audits'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'contacts' | 'supabase-status' | 'api-keys' | 'todos' | 'notes' | 'clients-jobs' | 'subscriptions' | 'financials' | 'coming-soon' | 'seo-audits' | 'seo-analyzer'>('analytics');
   const [isAPIDebuggerOpen, setIsAPIDebuggerOpen] = useState(false);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
 
@@ -878,6 +879,7 @@ const AdminPage: React.FC = () => {
               <TabButton tab="notes" icon={Sticky} label="Notes" />
               <TabButton tab="coming-soon" icon={Bell} label="Coming Soon" />
               <TabButton tab="seo-audits" icon={Search} label="SEO Audits" />
+              <TabButton tab="seo-analyzer" icon={Search} label="SEO Analyzer" />
               <TabButton tab="supabase-status" icon={Database} label="Supabase Status" />
             </div>
             
@@ -992,6 +994,10 @@ const AdminPage: React.FC = () => {
 
                 {activeTab === 'seo-audits' && (
                   <SeoAudits />
+                )}
+
+                {activeTab === 'seo-analyzer' && (
+                  <SeoAnalyzer />
                 )}
 
                 {activeTab === 'supabase-status' && (
