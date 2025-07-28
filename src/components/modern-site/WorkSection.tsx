@@ -103,7 +103,13 @@ const WorkCard: React.FC<{ work: Work; index: number; onClick: () => void }> = (
           <img 
             src={work.imageUrl}
             alt={work.title}
-            className="w-full h-full object-cover z-10"
+            className="absolute inset-0 w-full h-full object-cover z-10"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center'
+            }}
           />
         ) : (
           <h3 

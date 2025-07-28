@@ -603,3 +603,44 @@ html {
     background-repeat: no-repeat;
   }
 }
+
+/* Safari-specific fixes for background images */
+@supports (-webkit-appearance: none) {
+  .break-section-bg {
+    -webkit-background-size: cover !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+  }
+}
+
+/* iPhone Safari specific fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 2) and (max-width: 768px) {
+  .break-section-bg {
+    background-attachment: scroll !important;
+    -webkit-background-size: cover !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+  }
+}
+
+/* Safari fixes for work card hover images */
+@supports (-webkit-appearance: none) {
+  .work-carousel img {
+    -webkit-object-fit: cover !important;
+    object-fit: cover !important;
+    -webkit-object-position: center !important;
+    object-position: center !important;
+  }
+}
+
+/* Additional Safari fixes for image rendering */
+@media screen and (-webkit-min-device-pixel-ratio: 2) {
+  .work-carousel img {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+}
