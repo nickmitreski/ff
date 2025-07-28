@@ -105,10 +105,16 @@ const WorkCard: React.FC<{ work: Work; index: number; onClick: () => void }> = (
             alt={work.title}
             className="absolute inset-0 w-full h-full object-cover z-10"
             style={{
+              position: 'absolute',
+              top: '0',
+              left: '0',
+              right: '0',
+              bottom: '0',
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              objectPosition: 'center'
+              objectPosition: 'center',
+              borderRadius: '8px'
             }}
           />
         ) : (
