@@ -29,7 +29,13 @@ const ComingSoonEmailForm: React.FC<ComingSoonEmailFormProps> = ({ feature, colo
     setIsLoading(true);
     
     try {
-      const { data, error } = await supabase()
+      console.log('Submitting notification for feature:', feature);
+      console.log('Email:', email.trim());
+      
+      const supabaseClient = supabase();
+      console.log('Supabase client:', supabaseClient);
+      
+      const { data, error } = await supabaseClient
         .from('coming_soon_notifications')
         .insert({
           email: email.trim(),
@@ -37,8 +43,12 @@ const ComingSoonEmailForm: React.FC<ComingSoonEmailFormProps> = ({ feature, colo
           created_at: new Date().toISOString()
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
       
+      console.log('Successfully submitted notification:', data);
       setIsSubmitted(true);
       setEmail('');
     } catch (err) {
