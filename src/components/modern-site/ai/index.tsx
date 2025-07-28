@@ -168,8 +168,20 @@ const AITools: React.FC<AIToolsProps> = ({ className = "" }) => {
                   <span className="text-xs">Image Gen</span>
                 </div>
                 <div className="p-3 bg-gray-800 rounded-lg opacity-50">
-                  <Mic size={24} className="mx-auto mb-2 text-orange-400" />
-                  <span className="text-xs">Voice Assistant</span>
+                  <Video size={24} className="mx-auto mb-2 text-red-400" />
+                  <span className="text-xs">Video Gen</span>
+                </div>
+                <div className="p-3 bg-gray-800 rounded-lg opacity-50">
+                  <Phone size={24} className="mx-auto mb-2 text-pink-400" />
+                  <span className="text-xs">Voice Sales</span>
+                </div>
+                <div className="p-3 bg-gray-800 rounded-lg opacity-50">
+                  <Users size={24} className="mx-auto mb-2 text-purple-400" />
+                  <span className="text-xs">Lead Generator</span>
+                </div>
+                <div className="p-3 bg-gray-800 rounded-lg opacity-50">
+                  <Mic size={24} className="mx-auto mb-2 text-green-400" />
+                  <span className="text-xs">AI Voicebot</span>
                 </div>
               </div>
             </div>
