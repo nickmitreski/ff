@@ -379,11 +379,12 @@ const VoicebotDemo: React.FC = () => {
     try {
       const { data, error } = await supabase()
         .from('coming_soon_notifications')
-        .insert({
-          email: email.trim(),
-          feature_name: 'AI Voicebot',
-          created_at: new Date().toISOString()
-        });
+        .insert([
+          {
+            email: email.trim(),
+            feature_name: 'AI Voicebot'
+          }
+        ]);
 
       if (error) throw error;
       
@@ -455,11 +456,12 @@ const ImageGenerationDemo: React.FC = () => {
     try {
       const { data, error } = await supabase()
         .from('coming_soon_notifications')
-        .insert({
-          email: email.trim(),
-          feature_name: 'Image Generation',
-          created_at: new Date().toISOString()
-        });
+        .insert([
+          {
+            email: email.trim(),
+            feature_name: 'Image Generation'
+          }
+        ]);
 
       if (error) throw error;
       
@@ -531,11 +533,12 @@ const VideoGenerationDemo: React.FC = () => {
     try {
       const { data, error } = await supabase()
         .from('coming_soon_notifications')
-        .insert({
-          email: email.trim(),
-          feature_name: 'Video Generation',
-          created_at: new Date().toISOString()
-        });
+        .insert([
+          {
+            email: email.trim(),
+            feature_name: 'Video Generation'
+          }
+        ]);
 
       if (error) throw error;
       
@@ -607,11 +610,12 @@ const VoiceSalesDemo: React.FC = () => {
     try {
       const { data, error } = await supabase()
         .from('coming_soon_notifications')
-        .insert({
-          email: email.trim(),
-          feature_name: 'Voice Sales Agent',
-          created_at: new Date().toISOString()
-        });
+        .insert([
+          {
+            email: email.trim(),
+            feature_name: 'Voice Sales Agent'
+          }
+        ]);
 
       if (error) throw error;
       
@@ -683,11 +687,12 @@ const LeadGeneratorDemo: React.FC = () => {
     try {
       const { data, error } = await supabase()
         .from('coming_soon_notifications')
-        .insert({
-          email: email.trim(),
-          feature_name: 'AI Lead Generator',
-          created_at: new Date().toISOString()
-        });
+        .insert([
+          {
+            email: email.trim(),
+            feature_name: 'AI Lead Generator'
+          }
+        ]);
 
       if (error) throw error;
       
@@ -759,11 +764,12 @@ const PhoneReceptionistDemo: React.FC = () => {
     try {
       const { data, error } = await supabase()
         .from('coming_soon_notifications')
-        .insert({
-          email: email.trim(),
-          feature_name: 'AI Phone Receptionist',
-          created_at: new Date().toISOString()
-        });
+        .insert([
+          {
+            email: email.trim(),
+            feature_name: 'AI Phone Receptionist'
+          }
+        ]);
 
       if (error) throw error;
       
@@ -835,11 +841,12 @@ const EmailSalesDemo: React.FC = () => {
     try {
       const { data, error } = await supabase()
         .from('coming_soon_notifications')
-        .insert({
-          email: email.trim(),
-          feature_name: 'Email Sales Agent',
-          created_at: new Date().toISOString()
-        });
+        .insert([
+          {
+            email: email.trim(),
+            feature_name: 'Email Sales Agent'
+          }
+        ]);
 
       if (error) throw error;
       
@@ -911,11 +918,12 @@ const AIPersonalAssistantDemo: React.FC = () => {
     try {
       const { data, error } = await supabase()
         .from('coming_soon_notifications')
-        .insert({
-          email: email.trim(),
-          feature_name: 'AI Personal Assistant',
-          created_at: new Date().toISOString()
-        });
+        .insert([
+          {
+            email: email.trim(),
+            feature_name: 'AI Personal Assistant'
+          }
+        ]);
 
       if (error) throw error;
       

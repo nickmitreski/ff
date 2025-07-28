@@ -37,11 +37,12 @@ const ComingSoonEmailForm: React.FC<ComingSoonEmailFormProps> = ({ feature, colo
       
       const { data, error } = await supabaseClient
         .from('coming_soon_notifications')
-        .insert({
-          email: email.trim(),
-          feature_name: feature,
-          created_at: new Date().toISOString()
-        });
+        .insert([
+          {
+            email: email.trim(),
+            feature_name: feature
+          }
+        ]);
 
       if (error) {
         console.error('Supabase error:', error);
