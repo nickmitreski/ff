@@ -5,10 +5,124 @@ import ModernChatbot from './ModernChatbot';
 import ModernImageGenerator from './ModernImageGenerator';
 import ModernVoiceAssistant from './ModernVoiceAssistant';
 import ComingSoonTool from './ComingSoonTool';
+import { supabase } from '../../../lib/supabase';
 
 interface AIToolsProps {
   className?: string;
 }
+
+interface ComingSoonEmailFormProps {
+  feature: string;
+  color: string;
+  onClose: () => void;
+}
+
+const ComingSoonEmailForm: React.FC<ComingSoonEmailFormProps> = ({ feature, color, onClose }) => {
+  const [email, setEmail] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+
+    setIsLoading(true);
+    
+    try {
+      const { data, error } = await supabase()
+        .from('coming_soon_notifications')
+        .insert({
+          email: email.trim(),
+          feature: feature,
+          created_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+      
+      setIsSubmitted(true);
+      setEmail('');
+    } catch (err) {
+      console.error('Error submitting notification:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getColorClasses = (color: string) => {
+    switch (color) {
+      case 'green':
+        return {
+          bg: 'bg-green-500',
+          hover: 'hover:bg-green-600',
+          text: 'text-green-600',
+          border: 'border-green-500'
+        };
+      case 'purple':
+        return {
+          bg: 'bg-purple-500',
+          hover: 'hover:bg-purple-600',
+          text: 'text-purple-600',
+          border: 'border-purple-500'
+        };
+      case 'indigo':
+        return {
+          bg: 'bg-indigo-500',
+          hover: 'hover:bg-indigo-600',
+          text: 'text-indigo-600',
+          border: 'border-indigo-500'
+        };
+      default:
+        return {
+          bg: 'bg-blue-500',
+          hover: 'hover:bg-blue-600',
+          text: 'text-blue-600',
+          border: 'border-blue-500'
+        };
+    }
+  };
+
+  const colors = getColorClasses(color);
+
+  return (
+    <div className="w-full">
+      {isSubmitted ? (
+        <div className="text-center">
+          <div className={`bg-${color}-100 border border-${color}-300 rounded-lg p-4 mb-4`}>
+            <p className={`text-${color}-700 text-sm font-medium`}>
+              Thank you! We'll notify you when {feature} is ready.
+            </p>
+          </div>
+          <button 
+            onClick={() => setIsSubmitted(false)}
+            className={`text-${color}-600 hover:text-${color}-700 text-sm font-medium`}
+          >
+            Subscribe another email
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="w-full">
+          <div className="mb-4">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isLoading || !email.trim()}
+            className={`w-full ${colors.bg} ${colors.hover} disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg transition-colors font-medium`}
+          >
+            {isLoading ? 'Submitting...' : 'Get Notified'}
+          </button>
+        </form>
+      )}
+    </div>
+  );
+};
 
 type ToolType = 'chatbot' | 'image-generator' | 'voice-assistant' | 'video-generator' | 'voice-sales' | 'lead-generator' | 'ai-assistant' | 'phone-receptionist' | 'email-sales';
 
@@ -225,13 +339,17 @@ const AITools: React.FC<AIToolsProps> = ({ className = "" }) => {
                   <X size={16} />
                 </button>
               </div>
-              <div className="flex-1 flex items-center justify-center bg-gray-50">
-                <div className="text-center text-gray-500">
+              <div className="flex-1 p-6 bg-gray-50">
+                <div className="text-center mb-6">
                   <Phone size={48} className="mx-auto mb-4 text-green-500" />
-                  <h3 className="text-lg font-semibold mb-2">Phone Receptionist</h3>
-                  <p className="text-sm">AI-powered phone answering and call routing</p>
-                  <p className="text-xs mt-4 text-gray-400">Coming soon...</p>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-800">AI Phone Receptionist</h3>
+                  <p className="text-sm text-gray-600">AI-powered phone answering and call routing that handles customer inquiries professionally.</p>
                 </div>
+                <ComingSoonEmailForm 
+                  feature="AI Phone Receptionist"
+                  color="green"
+                  onClose={closePhoneReceptionist}
+                />
               </div>
             </div>
           </motion.div>
@@ -266,13 +384,17 @@ const AITools: React.FC<AIToolsProps> = ({ className = "" }) => {
                   <X size={16} />
                 </button>
               </div>
-              <div className="flex-1 flex items-center justify-center bg-gray-50">
-                <div className="text-center text-gray-500">
+              <div className="flex-1 p-6 bg-gray-50">
+                <div className="text-center mb-6">
                   <Mail size={48} className="mx-auto mb-4 text-purple-500" />
-                  <h3 className="text-lg font-semibold mb-2">Email Sales Agent</h3>
-                  <p className="text-sm">Automated email responses and lead nurturing</p>
-                  <p className="text-xs mt-4 text-gray-400">Coming soon...</p>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-800">Email Sales Agent</h3>
+                  <p className="text-sm text-gray-600">Automated email responses and lead nurturing that converts prospects into customers.</p>
                 </div>
+                <ComingSoonEmailForm 
+                  feature="Email Sales Agent"
+                  color="purple"
+                  onClose={closeEmailSales}
+                />
               </div>
             </div>
           </motion.div>
@@ -307,13 +429,17 @@ const AITools: React.FC<AIToolsProps> = ({ className = "" }) => {
                   <X size={16} />
                 </button>
               </div>
-              <div className="flex-1 flex items-center justify-center bg-gray-50">
-                <div className="text-center text-gray-500">
+              <div className="flex-1 p-6 bg-gray-50">
+                <div className="text-center mb-6">
                   <Sparkles size={48} className="mx-auto mb-4 text-indigo-500" />
-                  <h3 className="text-lg font-semibold mb-2">AI Personal Assistant</h3>
-                  <p className="text-sm">Personalized digital assistant for productivity</p>
-                  <p className="text-xs mt-4 text-gray-400">Coming soon...</p>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-800">AI Personal Assistant</h3>
+                  <p className="text-sm text-gray-600">Personalized digital assistants that help streamline workflows and boost productivity.</p>
                 </div>
+                <ComingSoonEmailForm 
+                  feature="AI Personal Assistant"
+                  color="indigo"
+                  onClose={closePersonalAssistant}
+                />
               </div>
             </div>
           </motion.div>
