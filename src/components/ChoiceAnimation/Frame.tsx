@@ -57,7 +57,7 @@ export const Frame = memo(({ onYearSelect, onYearHover }: FrameProps): JSX.Eleme
         <div className="relative w-full h-full cursor-pointer" onClick={handleImageClick}>
           {/* Try to load the uploaded image first */}
           <img 
-            src="/mobile_choice.png" 
+            src="/choice_screen.webp" 
             alt="Choose your experience - click on the year to select" 
             className="w-full h-full object-cover"
             onError={(e) => {
