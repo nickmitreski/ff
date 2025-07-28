@@ -206,7 +206,7 @@ export const Frame = memo(({ onYearSelect, onYearHover }: FrameProps): JSX.Eleme
                 onMouseEnter={() => onYearHover?.('1996')}
                 style={{ width: 'auto', height: 'auto' }}
               >
-                <img src="/1996.png" alt="1996" style={{ width: '150px', height: 'auto' }} />
+                <img src="/1996.webp" alt="1996" style={{ width: '150px', height: 'auto' }} />
               </div>
               <div 
                 className="cursor-pointer flex items-center justify-center"
@@ -214,7 +214,7 @@ export const Frame = memo(({ onYearSelect, onYearHover }: FrameProps): JSX.Eleme
                 onMouseEnter={() => onYearHover?.('2025')}
                 style={{ width: 'auto', height: 'auto' }}
               >
-                <img src="/2025.png" alt="2025" style={{ width: '150px', height: 'auto' }} />
+                <img src="/2025.webp" alt="2025" style={{ width: '150px', height: 'auto' }} />
               </div>
             </div>
 
@@ -222,7 +222,7 @@ export const Frame = memo(({ onYearSelect, onYearHover }: FrameProps): JSX.Eleme
             <div 
               className="absolute inset-0 w-full h-full bg-cover bg-center md:w-full md:h-full w-screen h-screen"
               style={{ 
-                backgroundImage: "url(/bg.png)",
+                backgroundImage: "url(/bg.webp)",
                 zIndex: 3
               }}
             />
@@ -235,7 +235,7 @@ export const Frame = memo(({ onYearSelect, onYearHover }: FrameProps): JSX.Eleme
             >
               {!isZoomed && (
                 <img 
-                  src="/power.png"
+                  src="/power.webp"
                   alt="Power On Button"
                   style={{
                     position: 'absolute',

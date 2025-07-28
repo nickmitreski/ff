@@ -12,7 +12,7 @@ const PricingWindow: React.FC = () => {
     {
       id: 'basic',
       title: 'Basic',
-      icon: '/WEBSITES.png',
+      icon: '/WEBSITES.webp',
       description: 'Perfect for small businesses looking to establish their digital presence.',
       price: '$999',
       color: '#008CFF',

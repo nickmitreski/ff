@@ -18,14 +18,14 @@ const services = [
   {
     id: 'branding',
     title: 'Branding & Identity',
-    icon: '/BRANDING.png',
+    icon: '/BRANDING.webp',
     description: 'Create a memorable brand that stands out in the digital landscape.',
     color: '#FFCC00'
   },
   {
     id: 'content',
     title: 'Content Creation',
-    icon: '/VIDEOS.png',
+    icon: '/VIDEOS.webp',
     description: 'Engaging content that tells your story and captures attention.',
     color: '#FF1493'
   },

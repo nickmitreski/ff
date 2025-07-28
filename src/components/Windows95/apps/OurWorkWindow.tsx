@@ -76,7 +76,7 @@ const OurWorkWindow: React.FC = () => {
       technologies: ['React', 'Next.js', 'Material UI', 'MongoDB'],
       features: ['Course Catalog', 'Learning Dashboard', 'Progress Tracking', 'Resource Library'],
       url: 'https://1stepahead.vercel.app/',
-      imageUrl: '/1stepahead.png',
+      imageUrl: '/1stepahead.webp',
       color: '#00CC66'
     },
     {
