@@ -11,6 +11,7 @@ const identifyUser = (id: string, properties?: Record<string, unknown>) => {
 export class AnalyticsTracker {
   private static instance: AnalyticsTracker;
   private sessionStartTime: number;
+  private clickCount: number = 0;
   private userProperties: Record<string, any> = {};
 
   constructor() {
@@ -31,6 +32,12 @@ export class AnalyticsTracker {
     
     // Track user properties
     this.trackUserProperties();
+    
+    // Initialize click tracking from localStorage
+    this.loadClickCount();
+    
+    // Set up click tracking
+    this.setupClickTracking();
   }
 
   private trackSessionStart() {
@@ -54,7 +61,7 @@ export class AnalyticsTracker {
       current_visit: new Date().toISOString(),
       session_duration: 0,
       pages_viewed: 1,
-      total_clicks: 0,
+      total_clicks: this.clickCount,
       preferred_theme: localStorage.getItem('theme') || 'system',
       preferred_language: navigator.language,
     };
@@ -66,6 +73,62 @@ export class AnalyticsTracker {
 
     this.userProperties = properties;
     identifyUser(properties.user_id, properties);
+  }
+
+  private loadClickCount() {
+    // Load click count from localStorage
+    const savedClicks = localStorage.getItem('total_clicks');
+    this.clickCount = savedClicks ? parseInt(savedClicks) : 0;
+  }
+
+  private setupClickTracking() {
+    // Track clicks on all interactive elements
+    document.addEventListener('click', (event) => {
+      this.incrementClickCount();
+    }, true);
+
+    // Track page visibility changes to handle session duration
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        // Page is hidden, save current session data
+        this.saveSessionData();
+      } else {
+        // Page is visible again, update session start time
+        this.sessionStartTime = Date.now();
+      }
+    });
+
+    // Track beforeunload to save session data
+    window.addEventListener('beforeunload', () => {
+      this.saveSessionData();
+    });
+  }
+
+  private incrementClickCount() {
+    this.clickCount++;
+    // Save to localStorage immediately
+    localStorage.setItem('total_clicks', this.clickCount.toString());
+    
+    // Track click event
+    trackEvent('click', {
+      timestamp: new Date().toISOString(),
+      total_clicks: this.clickCount,
+      session_duration: this.getSessionDuration(),
+    });
+  }
+
+  private saveSessionData() {
+    const sessionData = {
+      session_duration: this.getSessionDuration(),
+      total_clicks: this.clickCount,
+      timestamp: new Date().toISOString(),
+    };
+    
+    // Save to localStorage
+    localStorage.setItem('last_session_data', JSON.stringify(sessionData));
+    
+    // Track session end
+    trackEvent('session_ended', sessionData);
   }
 
   public trackFeatureUsage(feature: string, action: string, properties?: Record<string, any>) {
@@ -147,7 +210,7 @@ export class AnalyticsTracker {
   }
 
   public getClickCount(): number {
-    return this.userProperties.total_clicks || 0;
+    return this.clickCount;
   }
 
   public trackPageView(page: string, properties?: Record<string, any>) {
@@ -159,11 +222,7 @@ export class AnalyticsTracker {
   }
 
   public trackSessionEnd() {
-    trackEvent('session_ended', {
-      session_duration: this.getSessionDuration(),
-      pages_viewed: this.userProperties.pages_viewed || 1,
-      total_clicks: this.getClickCount(),
-    });
+    this.saveSessionData();
   }
 
   private generateSessionId(): string {
