@@ -15,6 +15,8 @@ type ToolType = 'chatbot' | 'image-generator' | 'voice-assistant' | 'video-gener
 const AITools: React.FC<AIToolsProps> = ({ className = "" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [isChatbotMinimized, setIsChatbotMinimized] = useState(false);
   
   useEffect(() => {
     const handleResize = () => {
@@ -27,6 +29,20 @@ const AITools: React.FC<AIToolsProps> = ({ className = "" }) => {
   
   const toggleOpen = () => {
     setIsOpen(!isOpen);
+  };
+
+  const openChatbot = () => {
+    setIsChatbotOpen(true);
+    setIsChatbotMinimized(false);
+    setIsOpen(false); // Close the tools panel
+  };
+
+  const closeChatbot = () => {
+    setIsChatbotOpen(false);
+  };
+
+  const toggleChatbotMinimize = () => {
+    setIsChatbotMinimized(!isChatbotMinimized);
   };
   
   return (
@@ -70,8 +86,8 @@ const AITools: React.FC<AIToolsProps> = ({ className = "" }) => {
             <div className="flex justify-between items-center p-3 border-b border-gray-800">
               <div className="flex gap-2">
                 <button
-                  className={`p-2 rounded-md bg-blue-600 text-white`}
-                  disabled
+                  className={`p-2 rounded-md ${isChatbotOpen ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                  onClick={openChatbot}
                 >
                   <Bot size={20} />
                 </button>
@@ -83,12 +99,35 @@ const AITools: React.FC<AIToolsProps> = ({ className = "" }) => {
                 <X size={20} />
               </button>
             </div>
-            <div className="h-[calc(100%-48px)]">
-              <ModernChatbot />
+            <div className="h-[calc(100%-48px)] p-4">
+              <div className="text-center text-gray-400">
+                <p className="text-sm mb-4">Click the chatbot button to start chatting!</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={openChatbot}
+                    className="p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    <Bot size={24} className="mx-auto mb-2 text-blue-400" />
+                    <span className="text-xs">Chatbot</span>
+                  </button>
+                  <div className="p-3 bg-gray-800 rounded-lg opacity-50">
+                    <Image size={24} className="mx-auto mb-2 text-yellow-400" />
+                    <span className="text-xs">Image Gen</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Chatbot Popup */}
+      <ModernChatbot
+        isOpen={isChatbotOpen}
+        onClose={closeChatbot}
+        onMinimize={toggleChatbotMinimize}
+        isMinimized={isChatbotMinimized}
+      />
     </div>
   );
 };

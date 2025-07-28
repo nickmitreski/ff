@@ -1,16 +1,29 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
 import { callOpenAI } from '../../../lib/llm';
-import { Send } from 'lucide-react';
+import { Send, X, Minimize2, Maximize2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
 }
 
-const ModernChatbot: React.FC = () => {
+interface ModernChatbotProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onMinimize?: () => void;
+  isMinimized?: boolean;
+}
+
+const ModernChatbot: React.FC<ModernChatbotProps> = ({ 
+  isOpen, 
+  onClose, 
+  onMinimize, 
+  isMinimized = false 
+}) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'assistant', content: 'Hi there! I\'m your AI assistant. How can I help you today?' }
+    { role: 'assistant', content: 'Hi there! 👋 I\'m your AI assistant. How can I help you today?' }
   ]);
   const [input, setInput] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -19,28 +32,30 @@ const ModernChatbot: React.FC = () => {
 
   // Create a chat session on mount
   useEffect(() => {
-    const createSession = async () => {
-      try {
-                    const { data, error } = await supabase
-        .from('chat_sessions')
-        .insert({})
-        .select('id');
-        
-      if (data && data.length > 0 && data[0]?.id) {
-        setSessionId(data[0].id as string);
-      }
-      } catch (err) {
-        console.error('Error creating session:', err);
-      }
-    };
-    
-    createSession();
-  }, []);
+    if (isOpen) {
+      const createSession = async () => {
+        try {
+          const { data, error } = await supabase()
+            .from('chat_sessions')
+            .insert({})
+            .select('id');
+          
+          if (data && data.length > 0 && data[0]?.id) {
+            setSessionId(data[0].id as string);
+          }
+        } catch (err) {
+          console.error('Error creating session:', err);
+        }
+      };
+      
+      createSession();
+    }
+  }, [isOpen]);
 
   // Store a message in Supabase
   const storeMessage = async (sessionId: string, msg: ChatMessage) => {
     try {
-      await supabase.from('chat_messages').insert({
+      await supabase().from('chat_messages').insert({
         session_id: sessionId,
         role: msg.role,
         content: msg.content,
@@ -101,6 +116,7 @@ const ModernChatbot: React.FC = () => {
       await storeMessage(sessionId, assistantMessage);
     } catch (err) {
       console.error('Error generating response:', err);
+      
       // Add a fallback response
       const fallbackMessage: ChatMessage = { 
         role: 'assistant', 
@@ -120,66 +136,107 @@ const ModernChatbot: React.FC = () => {
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="flex flex-col h-full bg-black/30 rounded-lg overflow-hidden border border-gray-800">
-      <div className="p-4 border-b border-gray-800 bg-black/50">
-        <h3 className="text-lg font-light text-white tracking-tight">Chat with Flash Forward AI</h3>
-      </div>
-      
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message, index) => (
-          <div 
-            key={index} 
-            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
-            <div 
-              className={`max-w-[80%] rounded-lg p-3 ${
-                message.role === 'user' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-gray-800 text-gray-200'
-              }`}
-            >
-              {message.content}
-            </div>
-          </div>
-        ))}
-        
-        {isGenerating && (
-          <div className="flex justify-start">
-            <div className="max-w-[80%] rounded-lg p-3 bg-gray-800 text-gray-200">
-              <div className="flex space-x-2">
-                <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+    <AnimatePresence>
+      <motion.div
+        className="fixed bottom-24 right-6 z-50"
+        initial={{ scale: 0.8, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.8, opacity: 0, y: 20 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      >
+        {/* Chat Box */}
+        <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-80 h-96 flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                <span className="text-sm font-bold">AI</span>
+              </div>
+              <div>
+                <h3 className="font-semibold text-sm">Flash Forward AI</h3>
+                <p className="text-xs opacity-90">Online • Ready to help</p>
               </div>
             </div>
+            <div className="flex items-center gap-1">
+              {onMinimize && (
+                <button
+                  onClick={onMinimize}
+                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                >
+                  {isMinimized ? <Maximize2 size={16} /> : <Minimize2 size={16} />}
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
           </div>
-        )}
-        
-        <div ref={messagesEndRef} />
-      </div>
-      
-      <div className="p-4 border-t border-gray-800 bg-black/50">
-        <div className="flex gap-2">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type your message..."
-            className="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white resize-none"
-            rows={1}
-            disabled={isGenerating}
-          />
-          <button
-            onClick={handleSend}
-            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg disabled:opacity-50"
-            disabled={isGenerating || !input.trim()}
-          >
-            <Send size={20} />
-          </button>
+          
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+            {messages.map((message, index) => (
+              <div 
+                key={index} 
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div 
+                  className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
+                    message.role === 'user' 
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-white text-gray-800 border border-gray-200'
+                  }`}
+                >
+                  {message.content}
+                </div>
+              </div>
+            ))}
+            
+            {isGenerating && (
+              <div className="flex justify-start">
+                <div className="max-w-[85%] rounded-2xl px-4 py-2 bg-white text-gray-800 border border-gray-200">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                    <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                    <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div ref={messagesEndRef} />
+          </div>
+          
+          {/* Input */}
+          <div className="p-4 bg-white border-t border-gray-200">
+            <div className="flex gap-2">
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type a message..."
+                className="flex-1 resize-none border border-gray-300 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={1}
+                disabled={isGenerating}
+                style={{ minHeight: '40px', maxHeight: '120px' }}
+              />
+              <button
+                onClick={handleSend}
+                className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full disabled:opacity-50 transition-colors"
+                disabled={isGenerating || !input.trim()}
+              >
+                <Send size={16} />
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
