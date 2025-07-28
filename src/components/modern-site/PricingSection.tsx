@@ -136,7 +136,7 @@ const PricingCard: React.FC<{ plan: PricingPlan; index: number }> = ({ plan, ind
 };
 
 export const PricingSection: React.FC<PricingSectionProps> = ({ className = "" }) => {
-  const [pricingType, setPricingType] = useState<'packages' | 'subscription'>('packages');
+  const [pricingType, setPricingType] = useState<'websites' | 'services'>('websites');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
 
   const calculateTotal = () => {
@@ -167,33 +167,33 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ className = "" }
               className="absolute top-0 left-0 h-full w-1/2 rounded-full bg-[#008CFF] z-0"
               initial={false}
               animate={{
-                x: pricingType === 'packages' ? 0 : '100%',
+                x: pricingType === 'websites' ? 0 : '100%',
                 width: '50%'
               }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             />
             <button
-              onClick={() => setPricingType('packages')}
+              onClick={() => setPricingType('websites')}
               className={`relative flex-1 px-6 py-2 rounded-full text-sm ${typography.fontFamily.light} ${transitions.colors} z-10 focus:outline-none focus:ring-2 focus:ring-[#008CFF] ${
-                pricingType === 'packages' ? 'text-black font-bold bg-[#008CFF]' : 'text-gray-400 font-light bg-transparent'
+                pricingType === 'websites' ? 'text-black font-bold bg-[#008CFF]' : 'text-gray-400 font-light bg-transparent'
               }`}
-              aria-pressed={pricingType === 'packages'}
+              aria-pressed={pricingType === 'websites'}
             >
-              Packages
+              Websites
             </button>
             <button
-              onClick={() => setPricingType('subscription')}
+              onClick={() => setPricingType('services')}
               className={`relative flex-1 px-6 py-2 rounded-full text-sm ${typography.fontFamily.light} ${transitions.colors} z-10 focus:outline-none focus:ring-2 focus:ring-[#008CFF] ${
-                pricingType === 'subscription' ? 'text-black font-bold bg-[#008CFF]' : 'text-gray-400 font-light bg-transparent'
+                pricingType === 'services' ? 'text-black font-bold bg-[#008CFF]' : 'text-gray-400 font-light bg-transparent'
               }`}
-              aria-pressed={pricingType === 'subscription'}
+              aria-pressed={pricingType === 'services'}
             >
-              Subscription
+              Services
             </button>
           </div>
         </div>
 
-        {pricingType === 'subscription' ? (
+        {pricingType === 'services' ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {Object.entries(subscriptionCategories).map(([key, category], index) => (
