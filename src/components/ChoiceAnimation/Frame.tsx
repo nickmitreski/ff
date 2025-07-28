@@ -55,63 +55,14 @@ export const Frame = memo(({ onYearSelect, onYearHover }: FrameProps): JSX.Eleme
     return (
       <section className="w-screen h-screen flex flex-col justify-center items-center bg-black">
         <div className="relative w-full h-full cursor-pointer" onClick={handleImageClick}>
-          {/* Try to load the uploaded image first */}
+          {/* Mobile choice image */}
           <img 
             src="/mobile_choice.png" 
             alt="Choose your experience - click on the year to select" 
             className="w-full h-full object-cover"
-            onError={(e) => {
-              // If image fails to load, hide it and show the CSS fallback
-              e.currentTarget.style.display = 'none';
-              const fallback = document.getElementById('mobile-choice-fallback');
-              if (fallback) fallback.style.display = 'block';
-            }}
           />
           
-          {/* CSS Fallback - shows the same design using CSS */}
-          <div 
-            id="mobile-choice-fallback"
-            className="w-full h-full relative hidden"
-            style={{
-              background: 'linear-gradient(to bottom, #d3d3d3 0%, #d3d3d3 50%, #000000 50%, #000000 100%)'
-            }}
-          >
-            {/* Instructional text */}
-            <div className="absolute top-8 left-0 right-0 text-center z-10">
-              <p className="text-black text-lg font-medium">click on the year to choose your experience</p>
-            </div>
-            
-            {/* 2007 Section (Top) */}
-            <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div className="text-8xl font-bold text-black cursor-pointer hover:opacity-80 transition-opacity">
-                2007
-              </div>
-            </div>
-            
-            {/* Torn paper effect */}
-            <div className="absolute top-1/2 left-0 right-0 h-8 bg-white" 
-                 style={{
-                   clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 80%, 5% 60%, 10% 80%, 15% 40%, 20% 80%, 25% 20%, 30% 80%, 35% 60%, 40% 80%, 45% 30%, 50% 80%, 55% 50%, 60% 80%, 65% 40%, 70% 80%, 75% 20%, 80% 80%, 85% 60%, 90% 80%, 95% 30%, 100% 80%, 100% 100%, 0% 100%)'
-                 }}>
-            </div>
-            
-            {/* 2025 Section (Bottom) */}
-            <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2">
-              <div className="text-8xl font-bold cursor-pointer hover:opacity-80 transition-opacity">
-                <span style={{color: '#FF69B4'}}>2</span>
-                <span style={{color: '#87CEEB'}}>0</span>
-                <span style={{color: '#FFD700'}}>2</span>
-                <span style={{color: '#9370DB'}}>5</span>
-              </div>
-              {/* Reflection effect */}
-              <div className="text-8xl font-bold opacity-30 transform scale-y-[-0.3] translate-y-[-20px]">
-                <span style={{color: '#FF69B4'}}>2</span>
-                <span style={{color: '#87CEEB'}}>0</span>
-                <span style={{color: '#FFD700'}}>2</span>
-                <span style={{color: '#9370DB'}}>5</span>
-              </div>
-            </div>
-          </div>
+
           
           {/* Invisible Click Areas - Transparent but functional */}
           <div className="absolute inset-0 z-20">
