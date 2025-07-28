@@ -42,12 +42,28 @@ const AIWorkPopup: React.FC<AIWorkPopupProps> = ({ onClose }) => {
       demoComponent: <ChatbotDemo />
     },
     {
-      id: 'voicebot',
-      title: 'Voicebot',
-      description: 'Voice-activated assistants that provide a natural, hands-free way for users to interact with your services.',
-      icon: <Mic size={32} className="text-green-400" />,
+      id: 'phone-receptionist',
+      title: 'AI Phone Receptionist',
+      description: 'AI-powered phone answering and call routing that handles customer inquiries professionally.',
+      icon: <Phone size={32} className="text-green-400" />,
       color: '#00CC66',
-      demoComponent: <VoicebotDemo />
+      demoComponent: <PhoneReceptionistDemo />
+    },
+    {
+      id: 'email-sales',
+      title: 'Email Sales Agent',
+      description: 'Automated email responses and lead nurturing that converts prospects into customers.',
+      icon: <Mail size={32} className="text-purple-400" />,
+      color: '#8B5CF6',
+      demoComponent: <EmailSalesDemo />
+    },
+    {
+      id: 'ai-personal-assistant',
+      title: 'AI Personal Assistant',
+      description: 'Personalized digital assistants that help streamline workflows and boost productivity.',
+      icon: <Sparkles size={32} className="text-indigo-400" />,
+      color: '#6366F1',
+      demoComponent: <AIPersonalAssistantDemo />
     },
     {
       id: 'image-generation',
@@ -72,22 +88,6 @@ const AIWorkPopup: React.FC<AIWorkPopupProps> = ({ onClose }) => {
       icon: <Phone size={32} className="text-pink-400" />,
       color: '#FF6600',
       demoComponent: <VoiceSalesDemo />
-    },
-    {
-      id: 'lead-generator',
-      title: 'Lead Generator',
-      description: 'Automated systems that identify and engage potential customers across digital channels.',
-      icon: <Users size={32} className="text-purple-400" />,
-      color: '#9933FF',
-      demoComponent: <LeadGeneratorDemo />
-    },
-    {
-      id: 'ai-assistant',
-      title: 'AI Assistant',
-      description: 'Personalized digital assistants that help streamline workflows and boost productivity.',
-      icon: <Sparkles size={32} className="text-indigo-400" />,
-      color: '#6366F1',
-      demoComponent: <AIAssistantDemo />
     }
   ];
 
@@ -145,7 +145,7 @@ const AIWorkPopup: React.FC<AIWorkPopupProps> = ({ onClose }) => {
               <>
                 <Bot size={32} className="text-purple-400" />
                 <h2 className={`${typography.fontSize['2xl']} ${typography.fontFamily.light} ${typography.tracking.tight} text-white`}>
-                  AI Tools
+                  AI Custom Tools & Services
                 </h2>
               </>
             )}
@@ -894,7 +894,7 @@ const LeadGeneratorDemo: React.FC = () => {
   );
 };
 
-const AIAssistantDemo: React.FC = () => {
+const PhoneReceptionistDemo: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -903,12 +903,9 @@ const AIAssistantDemo: React.FC = () => {
   });
   
   useEffect(() => {
-    // Calculate a fixed target date based on 17.5 days from now
     const targetDate = new Date();
-    targetDate.setDate(targetDate.getDate() + 17);
-    targetDate.setHours(targetDate.getHours() + 12); // Add 12 hours for the .5
+    targetDate.setDate(targetDate.getDate() + 5);
     
-    // Initial calculation
     const calculateTimeLeft = () => {
       const now = new Date();
       const difference = Math.max(0, Math.floor((targetDate.getTime() - now.getTime()) / 1000));
@@ -921,23 +918,159 @@ const AIAssistantDemo: React.FC = () => {
       return { days, hours, minutes, seconds };
     };
     
-    // Set initial time
     setTimeLeft(calculateTimeLeft());
     
-    // Update every second
     const interval = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
     
     return () => clearInterval(interval);
   }, []);
+
+  return (
+    <div className="h-[400px] flex flex-col items-center justify-center p-6 bg-gradient-to-b from-green-900/20 to-green-600/5">
+      <Phone size={64} className="text-green-500 mb-6" />
+      <h3 className="text-white text-xl mb-4">AI Phone Receptionist</h3>
+      <p className="text-gray-400 text-center max-w-md mb-8">
+        AI-powered phone answering and call routing that handles customer inquiries professionally.
+      </p>
+      
+      <div className="grid grid-cols-4 gap-4 text-center">
+        <div className="bg-black/50 p-3 rounded-lg">
+          <div className="text-white text-2xl font-light">{timeLeft.days}</div>
+          <div className="text-gray-500 text-xs">DAYS</div>
+        </div>
+        <div className="bg-black/50 p-3 rounded-lg">
+          <div className="text-white text-2xl font-light">{timeLeft.hours}</div>
+          <div className="text-gray-500 text-xs">HOURS</div>
+        </div>
+        <div className="bg-black/50 p-3 rounded-lg">
+          <div className="text-white text-2xl font-light">{timeLeft.minutes}</div>
+          <div className="text-gray-500 text-xs">MINUTES</div>
+        </div>
+        <div className="bg-black/50 p-3 rounded-lg">
+          <div className="text-white text-2xl font-light">{timeLeft.seconds}</div>
+          <div className="text-gray-500 text-xs">SECONDS</div>
+        </div>
+      </div>
+      
+      <div className="mt-6 text-center">
+        <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg">
+          Get Notified
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const EmailSalesDemo: React.FC = () => {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
   
+  useEffect(() => {
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + 5);
+    
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const difference = Math.max(0, Math.floor((targetDate.getTime() - now.getTime()) / 1000));
+      
+      const days = Math.floor(difference / (24 * 60 * 60));
+      const hours = Math.floor((difference % (24 * 60 * 60)) / (60 * 60));
+      const minutes = Math.floor((difference % (60 * 60)) / 60);
+      const seconds = difference % 60;
+      
+      return { days, hours, minutes, seconds };
+    };
+    
+    setTimeLeft(calculateTimeLeft());
+    
+    const interval = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="h-[400px] flex flex-col items-center justify-center p-6 bg-gradient-to-b from-purple-900/20 to-purple-600/5">
+      <Mail size={64} className="text-purple-500 mb-6" />
+      <h3 className="text-white text-xl mb-4">Email Sales Agent</h3>
+      <p className="text-gray-400 text-center max-w-md mb-8">
+        Automated email responses and lead nurturing that converts prospects into customers.
+      </p>
+      
+      <div className="grid grid-cols-4 gap-4 text-center">
+        <div className="bg-black/50 p-3 rounded-lg">
+          <div className="text-white text-2xl font-light">{timeLeft.days}</div>
+          <div className="text-gray-500 text-xs">DAYS</div>
+        </div>
+        <div className="bg-black/50 p-3 rounded-lg">
+          <div className="text-white text-2xl font-light">{timeLeft.hours}</div>
+          <div className="text-gray-500 text-xs">HOURS</div>
+        </div>
+        <div className="bg-black/50 p-3 rounded-lg">
+          <div className="text-white text-2xl font-light">{timeLeft.minutes}</div>
+          <div className="text-gray-500 text-xs">MINUTES</div>
+        </div>
+        <div className="bg-black/50 p-3 rounded-lg">
+          <div className="text-white text-2xl font-light">{timeLeft.seconds}</div>
+          <div className="text-gray-500 text-xs">SECONDS</div>
+        </div>
+      </div>
+      
+      <div className="mt-6 text-center">
+        <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg">
+          Get Notified
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const AIPersonalAssistantDemo: React.FC = () => {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+  
+  useEffect(() => {
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + 5);
+    
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const difference = Math.max(0, Math.floor((targetDate.getTime() - now.getTime()) / 1000));
+      
+      const days = Math.floor(difference / (24 * 60 * 60));
+      const hours = Math.floor((difference % (24 * 60 * 60)) / (60 * 60));
+      const minutes = Math.floor((difference % (60 * 60)) / 60);
+      const seconds = difference % 60;
+      
+      return { days, hours, minutes, seconds };
+    };
+    
+    setTimeLeft(calculateTimeLeft());
+    
+    const interval = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="h-[400px] flex flex-col items-center justify-center p-6 bg-gradient-to-b from-indigo-900/20 to-indigo-600/5">
       <Sparkles size={64} className="text-indigo-500 mb-6" />
       <h3 className="text-white text-xl mb-4">AI Personal Assistant</h3>
       <p className="text-gray-400 text-center max-w-md mb-8">
-        Our AI personal assistant will help you stay organized, manage tasks, and boost your productivity.
+        Personalized digital assistants that help streamline workflows and boost productivity.
       </p>
       
       <div className="grid grid-cols-4 gap-4 text-center">
