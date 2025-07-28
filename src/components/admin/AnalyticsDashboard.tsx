@@ -414,7 +414,7 @@ const AnalyticsDashboard: React.FC = () => {
       </div>
     );
   }
-
+  
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
@@ -651,8 +651,8 @@ const AnalyticsDashboard: React.FC = () => {
             <tbody>
               {data.events.slice(0, 10).map((event) => (
                 <tr key={event.id} className="border-b border-gray-800">
-                  <td className="py-3 px-4">
-                    <span className={`inline-block px-2 py-1 rounded text-xs ${
+                    <td className="py-3 px-4">
+                      <span className={`inline-block px-2 py-1 rounded text-xs ${
                       event.event === 'page_viewed' ? 'bg-blue-500/20 text-blue-400' :
                       event.event === 'feature_used' ? 'bg-green-500/20 text-green-400' :
                       event.event === 'api_call' ? 'bg-yellow-500/20 text-yellow-400' :
@@ -660,8 +660,8 @@ const AnalyticsDashboard: React.FC = () => {
                       'bg-gray-500/20 text-gray-400'
                     }`}>
                       {event.event}
-                    </span>
-                  </td>
+                      </span>
+                    </td>
                   <td className="py-3 px-4 text-gray-300">
                     {event.person?.id ? event.person.id.substring(0, 8) + '...' : 'Anonymous'}
                   </td>
@@ -671,10 +671,10 @@ const AnalyticsDashboard: React.FC = () => {
                       .map(([key, value]) => `${key}: ${String(value).substring(0, 20)}`)
                       .join(', ')}
                   </td>
-                  <td className="py-3 px-4 text-gray-500">
+                    <td className="py-3 px-4 text-gray-500">
                     {new Date(event.timestamp).toLocaleString()}
-                  </td>
-                </tr>
+                    </td>
+                  </tr>
               ))}
             </tbody>
           </table>
@@ -684,4 +684,4 @@ const AnalyticsDashboard: React.FC = () => {
   );
 };
 
-export default AnalyticsDashboard; 
+export default AnalyticsDashboard;

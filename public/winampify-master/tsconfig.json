@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "target": "esnext",
+    "allowJs": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "jsx": "preserve",
+    "pretty": true,
+    "strictNullChecks": false
+  },
+  "include": ["index.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "./js/index.tsx",
+    "built",
+    "config/*"
+  ]
+}

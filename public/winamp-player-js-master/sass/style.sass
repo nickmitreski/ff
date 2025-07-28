@@ -1,0 +1,305 @@
+@import "_font.sass"
+@import "_vars.sass"
+
+*
+	margin: 0
+	padding: 0
+	box-sizing: border-box
+
+body
+	font-size: 13px
+	font-family: $mainFont, $defaultFonts
+	height: 100vh
+
+ul
+	list-style: none
+
+.hide
+	display: none
+
+.wrap-winamp
+	display: flex
+	align-items: center
+	flex-flow: column wrap
+
+.winamp
+	width: 274px
+	border: 1px solid $outsideBorder
+	padding: 0 2px 2px 2px
+	background: -webkit-radial-gradient(rgb(63, 62, 96), rgb(28, 27, 43))
+	background: radial-gradient(rgb(63, 62, 96), rgb(28, 27, 43))
+	color: $greenColor
+
+.winamp-header
+	padding-top: 14px
+	background: url('../img/sprite.png') no-repeat 0 0
+	background-size: cover
+
+.winamp-main
+	display: flex
+	flex-direction: row
+	flex-wrap: wrap
+	justify-content: space-between
+	padding: 6px 2px 0 5px
+	margin-top: 2px
+	border: 1px solid $innerBorder
+	border-bottom: none
+
+.winamp-main-left
+	position: relative
+	width: 90px
+	height: 44px
+	background-color: #000
+	border-top: 1px solid $mainTimeBorderLeft
+	border-left: 1px solid $mainTimeBorderLeft
+	border-right: 1px solid $mainTimeBorderRight
+	border-bottom: 1px solid $mainTimeBorderRight
+	span
+		position: absolute
+		right: 3px
+		top: 8px
+		font-family: $timeFont, $defaultFonts
+		font-size: 30px
+		line-height: 15px
+		letter-spacing: 2px
+
+.winamp-main-right__title
+	position: relative
+	overflow: hidden
+	background-color: #000
+	margin-bottom: 4px
+	padding: 0px 4px
+	width: 162px
+	height: 15px
+	border-top: 1px solid $mainQualityBorderLeft
+	border-left: 1px solid $mainQualityBorderLeft
+	border-right: 1px solid $mainQualityBorderRight
+	border-bottom: 1px solid $mainQualityBorderRight
+	font-size: 11px
+	overflow: hidden
+	span
+		letter-spacing: 1px
+		display: inline-block
+	p
+		position: absolute
+		animation: winamp-main-right__marquee 10s linear infinite alternate
+
+.winamp-main-right__quality
+	font-size: 10px
+	line-height: 10px
+	margin-bottom: 8px
+	span
+		cursor: pointer
+
+.winamp-main-right__quality-kbps-desc
+	color: #fff
+
+.winamp-main-right__quality-music
+	display: inline-block
+	float: right
+	margin-right: 2px
+
+.winamp-main-right__quality-kbps,
+.winamp-main-right__quality-khz
+	display: inline-block
+	padding-bottom: 2px
+	height: 12px
+	background-color: #000
+	border-top: 1px solid $mainQualityBorderLeft
+	border-left: 1px solid $mainQualityBorderLeft
+	border-right: 1px solid $mainQualityBorderRight
+	border-bottom: 1px solid $mainQualityBorderRight
+	margin-right: 3px
+
+.winamp-main-right__quality-kbps
+	width: 18px
+
+.winamp-main-right__quality-khz
+	width: 13px
+
+.winamp-main-right__quality-mono
+	color: #fff
+
+.winamp-main-right__quality-stereo
+	color: $greenColor
+
+.winamp-main-right__volume
+	position: relative
+	background-color: $volumeBgColor
+	height: 5px
+	border-top: 1px solid $volumeBorderTop
+	border-bottom: 1px solid $volumeBorderBottom
+	width: 37%
+	border-radius: 10px
+	cursor: pointer
+	button
+		position: absolute
+		top: -3px
+		left: 0
+		width: 14px
+		height: 11px
+		font-size: 0
+		outline: none
+		border: 1px solid #000
+		background: url('../img/sprite.png') $volumeBtnBg -119px 15px
+		// cursor: pointer
+		&:hover
+			opacity: 0.8
+
+.winamp-main-bottom
+	width: 100%
+
+.winamp-main-bottom__rewind
+	position: relative
+	margin: 0 auto
+	max-width: 100%
+	width: 250px
+	height: 12px
+	margin-top: 8px
+	border-top: 2px solid $rewindBtnBorderLeft
+	border-left: 2px solid $rewindBtnBorderLeft
+	border-bottom: 2px solid $rewindBtnDorderRight
+	border-right: 2px solid $rewindBtnDorderRight
+	cursor: pointer
+	button
+		position: absolute
+		top: 0
+		width: 30px
+		height: 10px
+		font-size: 0
+		outline: none
+		background: url('../img/sprite.png') $volumeBtnBg -43px 25px
+		&:hover
+			opacity: 0.8
+
+.winamp-bottom
+	position: relative
+	padding: 6px 10px 7px
+	border: 1px solid $innerBorder
+	border-top: none
+	font-size: 0
+	button
+		height: 16px
+		width: 22px
+		border-left: 1px solid $mainBtnBorderLeft
+		border-top: 1px solid $mainBtnBorderLeft
+		border-bottom: 1px solid $mainBtnBorderRight
+		border-right: 1px solid $mainBtnBorderRight
+		outline: none
+		cursor: pointer
+		display: inline-block
+		vertical-align: middle
+		&:hover
+			opacity: 0.8
+	.btn-shuffle
+		width: 45px
+		height: 13px
+
+.btn-playlist--indent
+	margin: 0 6px
+
+.btn-prev
+	background: url('../img/sprite.png') $imageBg -20px 15px
+.btn-play
+	background: url('../img/sprite.png') $imageBg -60px 15px
+.btn-pause
+	background: url('../img/sprite.png') $imageBg -40px 15px
+.btn-reset
+	background: url('../img/sprite.png') $imageBg -80px 15px
+.btn-next
+	background: url('../img/sprite.png') $imageBg 0px 15px
+.btn-playlist
+	background: url('../img/sprite.png') $imageBg -100px 15px
+.btn-shuffle
+	background: url('../img/sprite.png') $imageBg 0px 26px
+
+.winamp-bottom__logo
+	position: absolute
+	right: 4px
+	top: 6px
+	img
+		width: 18px
+		height: 18px
+		display: block
+
+.winamp-main-right__marquee
+	display: flex
+	flex-flow: row nowrap
+	justify-content: space-between
+	width: 95%
+	span
+		height: 15px
+		white-space: nowrap
+
+.winamp-main-right__marquee-name
+	margin-right: 10px
+
+.winamp-main-right__marquee:hover
+	animation-play-state: paused
+
+@keyframes winamp-main-right__marquee
+	0%
+		left: 180px
+	100%
+		left: -180px
+
+.winamp-playlist
+	ul
+		border: 1px solid $outsideBorder
+		border-top: none
+		padding: 3px 3px 3px 3px
+		li
+			cursor: pointer
+
+.winamp-playlist-header
+	padding-top: 13px
+	background: url('../img/sprite.png') no-repeat 0 -13px
+	background-size: cover
+	border-left: 1px solid $innerBorderPlaylist
+	border-right: 1px solid $innerBorderPlaylist
+
+.winamp-playlist-content
+	display: -webkit-flex
+	display: -moz-flex
+	display: -ms-flex
+	display: -o-flex
+	display: flex
+	flex-flow: row wrap
+	justify-content: space-around
+	height: 70px
+	border: 1px solid $innerBorderPlaylist
+	border-top: none
+	padding: 3px 3px 0 3px
+	text-align: center
+
+.dragFilesHere
+	font-weight: bold
+	font-size: 14px
+	margin: auto
+	width: 100%
+	height: 50px
+	border: 1px solid $greenColor
+	border-radius: 10px
+	line-height: 50px
+
+.active-track
+	color: #fff!important
+	cursor: pointer
+
+.lazyScroll
+	animation: lazyScroll linear
+
+@keyframes lazyScroll
+	from
+		left: 0px
+	to
+		left: 216px
+
+.spinIt
+	animation: spinIt 3s linear forwards
+
+#analyser_render
+	width: 500px
+	height: 50px
+	background: #002D3C
+	margin-bottom: 10px

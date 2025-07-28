@@ -288,7 +288,14 @@ const Desktop: React.FC<Windows95DesktopProps> = memo(({ onBack, setCurrentView 
               y={isMobile ? 
                 getAdjustedIconPosition(position).y : 
                 position.y}
-              onOpen={() => handleOpenApp(id, app.contentType === 'component' ? React.createElement(app.component as React.ComponentType<AppContentProps>, { onOpenApp: handleOpenApp }) : undefined, app.name)}
+              onOpen={() => {
+                if (id === 'winamp') {
+                  // Winamp doesn't need onOpenApp prop, it's a standalone player
+                  handleOpenApp(id, React.createElement(app.component as React.ComponentType<{}>), app.name);
+                } else {
+                  handleOpenApp(id, app.contentType === 'component' ? React.createElement(app.component as React.ComponentType<AppContentProps>, { onOpenApp: handleOpenApp }) : undefined, app.name);
+                }
+              }}
               singleClick={isMobile}
             />
           );
