@@ -181,10 +181,11 @@ const SeoAnalyzer: React.FC = () => {
 
     try {
       // Call the Supabase Edge Function
-      const response = await fetch('/functions/v1/seo-analyzer', {
+      const response = await fetch('https://irzgkacsptptspcozrrd.supabase.co/functions/v1/seo-analyzer', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({ url: url.trim() }),
       });
