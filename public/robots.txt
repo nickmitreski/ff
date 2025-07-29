@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://flashforwarddigital.com/sitemap.xml
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /supabase/
+
+# Allow all other content
+Allow: /public/
+Allow: /src/ 

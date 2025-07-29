@@ -4,17 +4,48 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    headers: {
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://us.i.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://us.i.posthog.com https://file.garden;",
+    },
+  },
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
   build: {
     chunkSizeWarningLimit: 1000,
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-        inlineDynamicImports: true, // Force everything inline
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+      },
+      mangle: {
+        safari10: true,
       },
     },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['framer-motion', 'lucide-react'],
+          utils: ['clsx', 'class-variance-authority', 'tailwind-merge'],
+          webamp: ['webamp', 'winamp2-js'],
+          supabase: ['@supabase/supabase-js'],
+          analytics: ['posthog-js'],
+        },
+        inlineDynamicImports: false,
+      },
+    },
+    sourcemap: true, // Enable source maps for debugging
+    target: 'es2015', // Target modern browsers
   },
   define: {
     // Inject all environment variables as constants at build time

@@ -113,11 +113,12 @@ const InteractiveHero: React.FC = memo(() => {
       <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none opacity-80" />
 
       <main className="flex-grow flex flex-col items-center justify-center text-center px-4 pt-8 pb-12 relative z-10">
-        <motion.div
+        <motion.h1
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-4xl sm:text-5xl lg:text-[64px] text-white leading-tight max-w-4xl mb-8 flex flex-col items-center tracking-tighter"
+          aria-label="Flash Forward Digital - We flash forward your business with epic websites, slapping brands, kick ass content, and that AI stuff"
         >
           <span className="block mb-2 font-bold">flash forward with</span>
           <div className="h-[1.2em] overflow-hidden">
@@ -127,7 +128,7 @@ const InteractiveHero: React.FC = memo(() => {
               rotationInterval={3500}
             />
           </div>
-        </motion.div>
+        </motion.h1>
 
         <motion.div
           initial={{ opacity: 0, y: 10 }}

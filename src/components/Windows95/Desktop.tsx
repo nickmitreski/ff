@@ -272,6 +272,7 @@ const Desktop: React.FC<Windows95DesktopProps> = memo(({ onBack, setCurrentView 
 
   return (
     <WindowsContextProvider onBack={onBack}>
+      <h1 className="sr-only">Flash Forward Digital - Windows 95 Retro Experience - Explore our digital agency services through a nostalgic 1996 interface</h1>
       <div 
         className="win95"
         onContextMenu={handleContextMenu}

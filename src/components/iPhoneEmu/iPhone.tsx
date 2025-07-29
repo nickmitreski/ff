@@ -142,18 +142,21 @@ const IPhone: React.FC<IPhoneProps> = memo(({ setCurrentView }) => {
   }, [handleHomePress, setCurrentView]);
 
   return (
-    <DeviceFrame onHomePress={handleHomePress}>
-      <ScreenArea
-        appData={appData}
-        selectedApp={selectedApp}
-        onAppPress={handleAppPress}
-        onHomePress={handleHomePress}
-        isLocked={isLocked}
-        onUnlock={handleUnlock}
-        tutorialMessages={TUTORIAL_MESSAGES}
-        renderApp={renderApp}
-      />
-    </DeviceFrame>
+    <>
+      <h1 className="sr-only">Flash Forward Digital - iPhone 2007 Retro Experience - Explore our digital agency services through a nostalgic mobile interface</h1>
+      <DeviceFrame onHomePress={handleHomePress}>
+        <ScreenArea
+          appData={appData}
+          selectedApp={selectedApp}
+          onAppPress={handleAppPress}
+          onHomePress={handleHomePress}
+          isLocked={isLocked}
+          onUnlock={handleUnlock}
+          tutorialMessages={TUTORIAL_MESSAGES}
+          renderApp={renderApp}
+        />
+      </DeviceFrame>
+    </>
   );
 });
 
