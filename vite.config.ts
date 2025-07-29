@@ -49,6 +49,8 @@ export default defineConfig({
     cssCodeSplit: false, // Combine all CSS into a single file
     assetsInlineLimit: 4096, // Inline small assets as base64
     cssMinify: true, // Minify CSS
+    target: 'es2015', // Target modern browsers
+    sourcemap: true, // Enable source maps for debugging
     terserOptions: {
       compress: {
         drop_console: true,
@@ -61,6 +63,9 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
         manualChunks: (id: string) => {
           // Core React dependencies
           if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
@@ -126,8 +131,6 @@ export default defineConfig({
         inlineDynamicImports: false,
       },
     },
-    sourcemap: true, // Enable source maps for debugging
-    target: 'es2015', // Target modern browsers
   },
   define: {
     // Inject all environment variables as constants at build time

@@ -12,6 +12,12 @@
       "sizes": "112x125",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/1stepahead.png",
+      "sizes": "1909x808",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "categories": ["business", "productivity"],
