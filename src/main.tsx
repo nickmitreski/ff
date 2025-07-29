@@ -26,20 +26,41 @@ if ('serviceWorker' in navigator) {
 
 // Global error handler to reduce console errors
 window.addEventListener('error', (event) => {
-  if (process.env.NODE_ENV === 'development') {
+  // Only log critical errors in development
+  if (process.env.NODE_ENV === 'development' && event.error) {
     console.error('Global error:', event.error);
   }
   // Prevent default error logging in production
-  event.preventDefault();
+  if (process.env.NODE_ENV === 'production') {
+    event.preventDefault();
+  }
 });
 
 window.addEventListener('unhandledrejection', (event) => {
-  if (process.env.NODE_ENV === 'development') {
+  // Only log critical rejections in development
+  if (process.env.NODE_ENV === 'development' && event.reason) {
     console.error('Unhandled promise rejection:', event.reason);
   }
   // Prevent default error logging in production
-  event.preventDefault();
+  if (process.env.NODE_ENV === 'production') {
+    event.preventDefault();
+  }
 });
+
+// Suppress non-critical console messages in production
+if (process.env.NODE_ENV === 'production') {
+  const originalConsoleLog = console.log;
+  const originalConsoleInfo = console.info;
+  const originalConsoleDebug = console.debug;
+  
+  console.log = () => {};
+  console.info = () => {};
+  console.debug = () => {};
+  
+  // Keep error and warn for critical issues
+  console.error = originalConsoleLog;
+  console.warn = originalConsoleLog;
+}
 
 // Using simplified analytics without DOM event listeners
 
