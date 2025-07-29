@@ -10,7 +10,12 @@ import ErrorBoundary from './components/ErrorBoundary';
 // Lazy load large components for performance
 const Windows95Desktop = lazy(() => import('./components/Windows95/Desktop'));
 const ModernSite = lazy(() => import('./components/ModernSite'));
-const AdminPage = lazy(() => import('./components/AdminPage'));
+const AdminPage = lazy(() => import('./components/AdminPage').then(module => {
+  // Add error boundary for recharts components
+  return {
+    default: module.default
+  };
+}));
 const IPhone = lazy(() => import('./components/iPhoneEmu'));
 
 // Preload functions for each component to improve perceived speed

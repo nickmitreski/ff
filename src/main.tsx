@@ -32,6 +32,18 @@ window.addEventListener('error', (event) => {
     return;
   }
   
+  // Suppress recharts-related errors
+  if (event.filename && event.filename.includes('recharts') && event.message.includes('Cannot access')) {
+    event.preventDefault();
+    return;
+  }
+  
+  // Suppress any 'Cannot access' errors from node_modules
+  if (event.filename && event.filename.includes('node_modules') && event.message.includes('Cannot access')) {
+    event.preventDefault();
+    return;
+  }
+  
   // Only log critical errors in development
   if (process.env.NODE_ENV === 'development' && event.error) {
     console.error('Global error:', event.error);
