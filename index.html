@@ -121,9 +121,7 @@
     
     <!-- Preload critical resources -->
     <!-- Critical resources with optimized loading -->
-    <link rel="modulepreload" href="/src/main.tsx" crossorigin />
-    <link rel="modulepreload" href="/src/App.tsx" crossorigin />
-    <link rel="modulepreload" href="/src/components/InteractiveHero.tsx" crossorigin />
+    <!-- Note: Removed modulepreload for TypeScript files as they need to be built first -->
     <!-- Optimized image preloading -->
     <link rel="preload" href="/flashforward.png" as="image" fetchpriority="high" type="image/png" />
     <link rel="preload" href="/bg1.png" as="image" fetchpriority="high" type="image/png" />
@@ -249,13 +247,7 @@
         <img src="/bg4.png" alt="" style="display: none;" fetchpriority="high" />
       </div>
     </div>
-    <!-- Async load non-critical CSS -->
-    <link rel="preload" href="/src/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="/src/index.css"></noscript>
-    
-    <!-- Async load non-critical styles -->
-    <link rel="preload" href="/src/styles/global.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="/src/styles/global.css"></noscript>
+    <!-- Note: Removed async CSS loading to prevent MIME type issues -->
     
     <script type="module" src="/src/main.tsx" defer crossorigin></script>
     <noscript>

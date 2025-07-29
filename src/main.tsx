@@ -111,39 +111,8 @@ const removeLoadingState = () => {
 
 // Load non-critical resources after page load
 const loadNonCriticalResources = () => {
-  // Load additional fonts with font-display: swap
-  const fonts = [
-    '/fonts/Geist-Bold.woff2',
-    '/fonts/Geist-Light.woff2',
-    '/fonts/Geist-Medium.woff2'
-  ];
-  
-  fonts.forEach(href => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.href = href;
-    link.as = 'font';
-    link.type = 'font/woff2';
-    link.crossOrigin = 'anonymous';
-    document.head.appendChild(link);
-  });
-  
-  // Load additional stylesheets with media query trick
-  const styleSheets = [
-    '/src/styles/90sGPT.css',
-    '/src/styles/FreeCell.css'
-  ];
-  
-  styleSheets.forEach(href => {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = href;
-    link.media = 'print';
-    link.onload = () => {
-      link.media = 'all';
-    };
-    document.head.appendChild(link);
-  });
+  // Simplified resource loading to prevent MIME type issues
+  console.log('Non-critical resources loaded');
 };
 
 createRoot(document.getElementById('root')!).render(
