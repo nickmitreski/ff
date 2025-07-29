@@ -1,0 +1,15 @@
+# Exclude problematic files from Vercel deployment
+public/jspaint-main/src/Layer.js
+public/jspaint-main/src/*.js
+public/games/
+public/winampify-master/
+public/Iphone_Games/
+
+# Keep only essential files
+!public/flashforward.png
+!public/1stepahead.png
+!public/bg*.png
+!public/manifest.json
+!public/robots.txt
+!public/sitemap.xml
+!public/sw.js 

@@ -46,6 +46,9 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 1000,
     minify: 'terser',
+    // Exclude problematic directories from build processing
+    outDir: 'dist',
+    emptyOutDir: true,
     cssCodeSplit: false, // Combine all CSS into a single file
     assetsInlineLimit: 4096, // Inline small assets as base64
     cssMinify: true, // Minify CSS
@@ -62,6 +65,17 @@ export default defineConfig({
       },
     },
     rollupOptions: {
+      external: (id) => {
+        // Exclude problematic files from the build
+        if (id.includes('jspaint') || 
+            id.includes('Layer.js') || 
+            id.includes('public/') ||
+            id.includes('games/') ||
+            id.includes('winampify')) {
+          return true;
+        }
+        return false;
+      },
       output: {
         entryFileNames: 'assets/[name]-[hash].js',
         chunkFileNames: 'assets/[name]-[hash].js',
