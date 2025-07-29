@@ -14,7 +14,7 @@
   font-family: 'MS Sans Serif', Arial, sans-serif !important;
   color: var(--win95-text);
   background-color: var(--win95-bg);
-  background-image: url('/background.png');
+  background-image: url('/background.webp');
   background-size: cover;
   background-position: center;
   width: 100%;
