@@ -1,7 +1,40 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { ApiCost, Revenue, Expense } from '../AdminPage';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+// Dynamic import for recharts to prevent initialization errors
+const [rechartsComponents, setRechartsComponents] = React.useState<any>(null);
+const [rechartsError, setRechartsError] = React.useState<boolean>(false);
+
+React.useEffect(() => {
+  const loadRecharts = async () => {
+    try {
+      const recharts = await import('recharts');
+      setRechartsComponents({
+        BarChart: recharts.BarChart,
+        Bar: recharts.Bar,
+        XAxis: recharts.XAxis,
+        YAxis: recharts.YAxis,
+        CartesianGrid: recharts.CartesianGrid,
+        Tooltip: recharts.Tooltip,
+        ResponsiveContainer: recharts.ResponsiveContainer,
+        PieChart: recharts.PieChart,
+        Pie: recharts.Pie,
+        Cell: recharts.Cell,
+        LineChart: recharts.LineChart,
+        Line: recharts.Line
+      });
+    } catch (error) {
+      console.warn('Failed to load recharts:', error);
+      setRechartsError(true);
+    }
+  };
+  
+  loadRecharts();
+}, []);
+
+// Fallback components
+const FallbackChart = () => <div className="p-4 text-center text-gray-500">Chart loading...</div>;
+const FallbackComponent = () => null;
 import { DollarSign, Plus, Trash2, Edit, TrendingUp, TrendingDown, Filter, Download } from 'lucide-react';
 
 interface FinancialDashboardProps {
@@ -21,6 +54,21 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
   setRevenues,
   setExpenses
 }) => {
+  // Show loading state if recharts is not loaded yet
+  if (!rechartsComponents) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-400">Loading dashboard...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const [activeTab, setActiveTab] = useState<'overview' | 'api-costs' | 'revenues' | 'expenses'>('overview');
   const [timeRange, setTimeRange] = useState<'month' | 'quarter' | 'year' | 'all'>('month');
   const [isAddingApiCost, setIsAddingApiCost] = useState(false);
