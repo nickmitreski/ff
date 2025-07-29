@@ -17,6 +17,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
+    include: ['react', 'react-dom'],
   },
   build: {
     chunkSizeWarningLimit: 1000,

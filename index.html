@@ -63,6 +63,20 @@
         justify-content: center;
         background: #000;
         color: #fff;
+        text-align: center;
+        padding: 2rem;
+      }
+      /* Critical text styles */
+      .hero-title {
+        font-size: clamp(2rem, 5vw, 4rem);
+        font-weight: bold;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+      }
+      .hero-subtitle {
+        font-size: clamp(1rem, 2vw, 1.5rem);
+        opacity: 0.9;
+        margin-bottom: 2rem;
       }
       @media (max-width: 768px) { 
         .app-container { 
@@ -94,6 +108,19 @@
         border-top: 4px solid #008CFF;
         border-radius: 50%;
       }
+      /* LCP optimization */
+      .lcp-image {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+        display: block;
+      }
+      .lcp-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
       @keyframes spin { 
         from { transform: rotate(0deg); } 
         to { transform: rotate(360deg); } 
@@ -107,9 +134,12 @@
     
     <!-- Preload critical resources -->
     <!-- Critical resources with optimized loading -->
-    <link rel="modulepreload" href="/src/main.tsx" />
+    <link rel="modulepreload" href="/src/main.tsx" crossorigin />
     <link rel="preload" href="/flashforward.png" as="image" fetchpriority="high" />
     <link rel="preload" href="/bg1.png" as="image" fetchpriority="high" />
+    <link rel="preload" href="/bg2.png" as="image" fetchpriority="high" />
+    <link rel="preload" href="/bg3.png" as="image" fetchpriority="high" />
+    <link rel="preload" href="/bg4.png" as="image" fetchpriority="high" />
     <!-- Non-critical external resources -->
     <link rel="dns-prefetch" href="//us.i.posthog.com" />
     <link rel="dns-prefetch" href="//file.garden" />
@@ -119,8 +149,8 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://flashforwarddigital.com" />
-    <meta property="og:title" content="Flash Forward Digital - Web Design, AI Automation & Digital Agency Services" />
-    <meta property="og:description" content="We flash forward your business with modern web design, AI automation, branding & content creation. Experience our retro Windows 95 demo while we transform your digital presence." />
+    <meta property="og:title" content="Flash Forward Digital - Web Design & AI Agency" />
+    <meta property="og:description" content="We flash forward your business with modern web design, AI automation & branding. Experience our retro Windows 95 demo while we transform your digital presence." />
     <meta property="og:image" content="https://flashforwarddigital.com/flashforward.png" />
     <meta property="og:image:width" content="512" />
     <meta property="og:image:height" content="512" />
@@ -129,8 +159,8 @@
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://flashforwarddigital.com" />
-    <meta property="twitter:title" content="Flash Forward Digital - Web Design, AI Automation & Digital Agency Services" />
-    <meta property="twitter:description" content="We flash forward your business with modern web design, AI automation, branding & content creation. Experience our retro Windows 95 demo while we transform your digital presence." />
+    <meta property="twitter:title" content="Flash Forward Digital - Web Design & AI Agency" />
+    <meta property="twitter:description" content="We flash forward your business with modern web design, AI automation & branding. Experience our retro Windows 95 demo while we transform your digital presence." />
     <meta property="twitter:image" content="https://flashforwarddigital.com/flashforward.png" />
     
     <!-- Structured Data -->
@@ -208,7 +238,7 @@
         <div class="loading-spinner" style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #008CFF; border-radius: 50%;"></div>
       </div>
     </div>
-    <script type="module" src="/src/main.tsx" defer></script>
+    <script type="module" src="/src/main.tsx" defer crossorigin></script>
     <noscript>
       <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
         <h1>Flash Forward Digital</h1>

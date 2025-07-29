@@ -6,6 +6,13 @@ export default {
     './src/components/**/*.{js,ts,jsx,tsx}',
     './public/**/*.html'
   ],
+  safelist: [
+    'loading',
+    'loading-spinner',
+    'hero-section',
+    'hero-title',
+    'hero-subtitle'
+  ],
   theme: {
     extend: {
       fontFamily: {
