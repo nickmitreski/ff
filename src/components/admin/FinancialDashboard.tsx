@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { ApiCost, Revenue, Expense } from '../AdminPage';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { DollarSign, Plus, Trash2, Edit, TrendingUp, TrendingDown, Filter, Download } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { DollarSign, Plus, Trash2, TrendingUp, TrendingDown, Filter, Download } from 'lucide-react';
 
 interface FinancialDashboardProps {
   apiCosts: ApiCost[];
@@ -57,7 +57,8 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
     setError(null);
     
     try {
-      const { data, error } = await supabase
+      const supabaseClient = supabase();
+      const { data, error } = await supabaseClient
         .from('api_costs')
         .insert(newApiCost)
         .select()
@@ -65,7 +66,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
       
       if (error) throw error;
       if (data) {
-        setApiCosts(prev => [...prev, data]);
+        setApiCosts(prev => [...prev, data as unknown as ApiCost]);
         setNewApiCost({
           provider: '',
           service: '',
@@ -85,7 +86,8 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
     setError(null);
     
     try {
-      const { data, error } = await supabase
+      const supabaseClient = supabase();
+      const { data, error } = await supabaseClient
         .from('revenues')
         .insert(newRevenue)
         .select()
@@ -93,7 +95,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
       
       if (error) throw error;
       if (data) {
-        setRevenues(prev => [...prev, data]);
+        setRevenues(prev => [...prev, data as unknown as Revenue]);
         setNewRevenue({
           source: '',
           amount: 0,
@@ -112,7 +114,8 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
     setError(null);
     
     try {
-      const { data, error } = await supabase
+      const supabaseClient = supabase();
+      const { data, error } = await supabaseClient
         .from('expenses')
         .insert(newExpense)
         .select()
@@ -120,7 +123,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
       
       if (error) throw error;
       if (data) {
-        setExpenses(prev => [...prev, data]);
+        setExpenses(prev => [...prev, data as unknown as Expense]);
         setNewExpense({
           category: 'api',
           amount: 0,
@@ -142,7 +145,8 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
     setError(null);
     
     try {
-      const { error } = await supabase
+      const supabaseClient = supabase();
+      const { error } = await supabaseClient
         .from('api_costs')
         .delete()
         .eq('id', id);
@@ -163,7 +167,8 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
     setError(null);
     
     try {
-      const { error } = await supabase
+      const supabaseClient = supabase();
+      const { error } = await supabaseClient
         .from('revenues')
         .delete()
         .eq('id', id);
@@ -184,7 +189,8 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
     setError(null);
     
     try {
-      const { error } = await supabase
+      const supabaseClient = supabase();
+      const { error } = await supabaseClient
         .from('expenses')
         .delete()
         .eq('id', id);
@@ -551,7 +557,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
                       dataKey="value"
                       label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                     >
-                      {apiCostsByProvider.map((entry, index) => (
+                      {apiCostsByProvider.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -579,7 +585,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
                       dataKey="value"
                       label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                     >
-                      {revenuesByCategory.map((entry, index) => (
+                      {revenuesByCategory.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -607,7 +613,7 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({
                       dataKey="value"
                       label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                     >
-                      {expensesByCategory.map((entry, index) => (
+                      {expensesByCategory.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
