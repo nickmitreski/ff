@@ -1,4 +1,4 @@
-/* Removed leaflet import - using Google Maps instead */
+@import 'leaflet/dist/leaflet.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

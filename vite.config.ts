@@ -31,29 +31,11 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
-    include: [
-      'react', 
-      'react-dom',
-      'framer-motion',
-      'clsx',
-      'class-variance-authority',
-      'tailwind-merge',
-      '@supabase/supabase-js',
-      'posthog-js'
-    ],
-    force: true, // Force re-optimization
+    include: ['react', 'react-dom'],
   },
   build: {
     chunkSizeWarningLimit: 1000,
     minify: 'terser',
-    // Exclude problematic directories from build processing
-    outDir: 'dist',
-    emptyOutDir: true,
-    cssCodeSplit: false, // Combine all CSS into a single file
-    assetsInlineLimit: 4096, // Inline small assets as base64
-    cssMinify: true, // Minify CSS
-    target: 'es2015', // Target modern browsers
-    sourcemap: true, // Enable source maps for debugging
     terserOptions: {
       compress: {
         drop_console: true,
@@ -65,86 +47,20 @@ export default defineConfig({
       },
     },
     rollupOptions: {
-      external: (id) => {
-        // Exclude problematic files from the build
-        if (id.includes('jspaint') || 
-            id.includes('Layer.js') || 
-            id.includes('public/') ||
-            id.includes('games/') ||
-            id.includes('winampify')) {
-          return true;
-        }
-        return false;
-      },
       output: {
-        entryFileNames: 'assets/[name]-[hash].js',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]',
-        manualChunks: (id: string) => {
-          // Core React dependencies
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'react-core';
-          }
-          
-          // UI and animation libraries
-          if (id.includes('node_modules/framer-motion') || 
-              id.includes('node_modules/lucide-react') ||
-              id.includes('node_modules/@radix-ui')) {
-            return 'ui-libs';
-          }
-          
-          // Utility libraries
-          if (id.includes('node_modules/clsx') || 
-              id.includes('node_modules/class-variance-authority') ||
-              id.includes('node_modules/tailwind-merge')) {
-            return 'utils';
-          }
-          
-          // Audio and media libraries
-          if (id.includes('node_modules/webamp') || 
-              id.includes('node_modules/winamp2-js') ||
-              id.includes('node_modules/tone')) {
-            return 'audio';
-          }
-          
-          // Backend and API
-          if (id.includes('node_modules/@supabase')) {
-            return 'supabase';
-          }
-          
-          // Analytics
-          if (id.includes('node_modules/posthog-js')) {
-            return 'analytics';
-          }
-          
-          // Windows 95 specific components
-          if (id.includes('Windows95') || id.includes('winamp')) {
-            return 'win95';
-          }
-          
-          // iPhone emulator components
-          if (id.includes('iPhoneEmu') || id.includes('iphone')) {
-            return 'iphone';
-          }
-          
-          // Modern site components
-          if (id.includes('modern-site')) {
-            return 'modern';
-          }
-          
-          // Admin components
-          if (id.includes('admin')) {
-            return 'admin';
-          }
-          
-          // Default vendor chunk for other dependencies
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['framer-motion', 'lucide-react'],
+          utils: ['clsx', 'class-variance-authority', 'tailwind-merge'],
+          webamp: ['webamp', 'winamp2-js'],
+          supabase: ['@supabase/supabase-js'],
+          analytics: ['posthog-js'],
         },
         inlineDynamicImports: false,
       },
     },
+    sourcemap: true, // Enable source maps for debugging
+    target: 'es2015', // Target modern browsers
   },
   define: {
     // Inject all environment variables as constants at build time

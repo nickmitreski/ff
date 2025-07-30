@@ -110,7 +110,7 @@ body {
 
 /* Windows 95 Classic Mouse Cursors (local) */
 html, body, .win95, .win95-window, .win95-folder-content, .win95-folder-item {
-  cursor: default;
+  cursor: url('/arrow.cur'), default;
 }
 
 /* To add more Windows 95 cursors, place .cur files in /public and update the CSS below:
@@ -123,11 +123,11 @@ input, textarea, .win95-folder-item-text {
 */
 
 button, a, .win95-folder-item:hover, .win95-desktop-icon:hover {
-  cursor: pointer;
+  cursor: url('/arrow.cur'), default;
 }
 
 input, textarea, .win95-folder-item-text {
-  cursor: text;
+  cursor: url('/arrow.cur'), default;
 }
 
 .win95-window-title, .win95-window {

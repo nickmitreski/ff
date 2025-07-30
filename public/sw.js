@@ -21,38 +21,15 @@ const cacheStrategies = {
   api: 'network-first', // 5 minutes
   image: 'cache-first', // 1 month
   font: 'cache-first', // 1 year
-  css: 'cache-first', // 1 year
-  js: 'cache-first', // 1 year
 };
 
-// Critical resources that should be cached immediately
-const criticalResources = [
-  '/',
-  '/flashforward.png',
-  '/manifest.json',
-  '/sounds/windows95-startup.mp3',
-  '/sounds/windows95-error.mp3',
-  '/sounds/windows95-maximize.mp3',
-  '/sounds/windows95-minimize.mp3',
-  '/bg1.png',
-  '/bg2.png',
-  '/bg3.png',
-  '/bg4.png'
-];
 
 
-
-// Install event - cache critical resources
+// Install event - cache resources
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    Promise.all([
-      caches.open(STATIC_CACHE)
-        .then((cache) => cache.addAll(criticalResources)),
-      caches.open(IMAGE_CACHE)
-        .then((cache) => cache.addAll(['/flashforward.png', '/bg1.png', '/bg2.png', '/bg3.png', '/bg4.png'])),
-      caches.open(FONT_CACHE)
-        .then((cache) => cache.addAll(['/fonts/Geist-Bold.woff2', '/fonts/Geist-Light.woff2', '/fonts/Geist-Medium.woff2']))
-    ])
+    caches.open(STATIC_CACHE)
+      .then((cache) => cache.addAll(urlsToCache))
   );
 });
 
