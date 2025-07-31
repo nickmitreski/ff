@@ -39,7 +39,7 @@ const services = [
   {
     id: 'social',
     title: 'Social Media',
-    icon: '/SOCIAL.png',
+    icon: '/VIDEOS.webp',
     description: 'Build your presence on social media with engaging content.',
     color: '#9933FF'
   },

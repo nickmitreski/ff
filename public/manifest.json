@@ -9,9 +9,9 @@
   "icons": [
     {
       "src": "/flashforward.png",
-      "sizes": "512x512",
+      "sizes": "112x125",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "categories": ["business", "productivity"],
