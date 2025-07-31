@@ -5,7 +5,7 @@ import React, { useState } from 'react';
  * with styling inspired by the modern site
  */
 const PricingWindow: React.FC = () => {
-  const [pricingType, setPricingType] = useState<'packages' | 'subscription'>('packages');
+  const [pricingType, setPricingType] = useState<'websites' | 'services'>('websites');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
 
   const plans = [
@@ -150,11 +150,11 @@ const PricingWindow: React.FC = () => {
         overflow: 'hidden'
       }}>
         <button
-          onClick={() => setPricingType('packages')}
+          onClick={() => setPricingType('websites')}
           style={{
             padding: '8px 32px',
-            background: pricingType === 'packages' ? '#fff' : 'transparent',
-            color: pricingType === 'packages' ? '#000080' : '#333',
+            background: pricingType === 'websites' ? '#fff' : 'transparent',
+            color: pricingType === 'websites' ? '#000080' : '#333',
             fontWeight: 'bold',
             border: 'none',
             outline: 'none',
@@ -164,14 +164,14 @@ const PricingWindow: React.FC = () => {
             transition: 'background 0.2s, color 0.2s'
           }}
         >
-          Packages
+          Websites
         </button>
         <button
-          onClick={() => setPricingType('subscription')}
+          onClick={() => setPricingType('services')}
           style={{
             padding: '8px 32px',
-            background: pricingType === 'subscription' ? '#fff' : 'transparent',
-            color: pricingType === 'subscription' ? '#000080' : '#333',
+            background: pricingType === 'services' ? '#fff' : 'transparent',
+            color: pricingType === 'services' ? '#000080' : '#333',
             fontWeight: 'bold',
             border: 'none',
             outline: 'none',
@@ -180,12 +180,12 @@ const PricingWindow: React.FC = () => {
             transition: 'background 0.2s, color 0.2s'
           }}
         >
-          Subscription
+          Services
         </button>
       </div>
 
       {/* Content */}
-      {pricingType === 'packages' ? (
+      {pricingType === 'websites' ? (
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -412,8 +412,8 @@ const PricingWindow: React.FC = () => {
         </div>
       )}
 
-      {/* Subscription total (only show in subscription mode) */}
-      {pricingType === 'subscription' && (
+      {/* Services total (only show in services mode) */}
+      {pricingType === 'services' && (
         <div style={{
           marginTop: '24px',
           maxWidth: '400px',
