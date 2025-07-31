@@ -197,57 +197,24 @@ const OurWorkWindow: React.FC = () => {
               </div>
             </div>
 
-            {/* Folder Name */}
-            <div style={{
-              textAlign: 'center',
-              fontSize: '11px',
-              fontWeight: 'bold',
-              color: '#000080',
-              lineHeight: '1.2',
-              wordBreak: 'break-word'
-            }}>
-              {category.title}
-            </div>
+                         {/* Folder Name */}
+             <div style={{
+               textAlign: 'center',
+               fontSize: '14px',
+               fontWeight: 'bold',
+               color: '#000080',
+               lineHeight: '1.2',
+               wordBreak: 'break-word'
+             }}>
+               {category.title}
+             </div>
 
-            {/* Folder Description */}
-            <div style={{
-              textAlign: 'center',
-              fontSize: '9px',
-              color: '#666',
-              marginTop: '4px',
-              lineHeight: '1.2'
-            }}>
-              {category.description}
-            </div>
+            
           </div>
         ))}
       </div>
 
-      {/* Footer */}
-      <div style={{
-        marginTop: '20px',
-        padding: '16px',
-        border: '2px solid',
-        borderColor: '#ffffff #808080 #808080 #ffffff',
-        background: 'white',
-        boxShadow: 'inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080',
-        textAlign: 'center'
-      }}>
-        <p style={{
-          fontSize: '12px',
-          margin: '0 0 8px 0',
-          color: '#666'
-        }}>
-          Ready to start your next project?
-        </p>
-        <p style={{
-          fontSize: '11px',
-          margin: '0',
-          color: '#999'
-        }}>
-          Contact us to discuss how we can help bring your vision to life
-        </p>
-      </div>
+
 
       {/* Modern Popup Overlay */}
       {selectedWorkId && (
