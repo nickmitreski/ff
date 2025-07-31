@@ -46,10 +46,12 @@ const PricingWindow: React.FC = () => {
       title: 'Website Services',
       color: '#008CFF',
       services: [
-        { name: 'Website Hosting', price: 29 },
-        { name: 'SSL Certificate', price: 15 },
-        { name: 'Daily Backups', price: 19 },
-        { name: '24/7 Support', price: 49 }
+        { name: 'Fast & secure managed hosting', price: 19 },
+        { name: 'SSL Certificate', price: 9 },
+        { name: 'Daily Backups', price: 9 },
+        { name: 'Ongoing Support & Updates', price: 59 },
+        { name: 'Performance Optimisation', price: 49 },
+        { name: 'Security Monitoring', price: 19 }
       ]
     },
     {
@@ -57,10 +59,11 @@ const PricingWindow: React.FC = () => {
       title: 'Content Services',
       color: '#FFCC00',
       services: [
-        { name: 'Content Updates', price: 149 },
-        { name: 'Blog Writing', price: 199 },
-        { name: 'Social Media Management', price: 299 },
-        { name: 'Email Marketing', price: 99 }
+        { name: 'Content Updates', price: 99 },
+        { name: 'Blog Writing (4 SEO-optimized blog posts/mo.)', price: 149 },
+        { name: 'Social Media Management', price: 249 },
+        { name: 'Custom AI image creation service', price: 49 },
+        { name: 'Custom AI Video creation service', price: 99 }
       ]
     },
     {
@@ -68,10 +71,11 @@ const PricingWindow: React.FC = () => {
       title: 'AI Services',
       color: '#00CC66',
       services: [
-        { name: 'AI Chatbot', price: 199 },
-        { name: 'AI Content Generation', price: 149 },
-        { name: 'AI Analytics', price: 99 },
-        { name: 'AI Automation', price: 249 }
+        { name: 'AI Website Chatbot', price: 149 },
+        { name: 'AI Analytics Dashboard', price: 89 },
+        { name: 'AI Automation (3 x custom workflows)', price: 149 },
+        { name: 'AI Voice Agent (Calls/SMS)', price: 249 },
+        { name: 'AI Voice Receptionist (Incoming calls)', price: 249 }
       ]
     }
   ];
