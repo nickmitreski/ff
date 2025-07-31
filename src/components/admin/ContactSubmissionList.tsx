@@ -18,7 +18,7 @@ const ContactSubmissionList: React.FC<ContactSubmissionListProps> = ({ contactSu
   const handleStatusChange = async (id: string, newStatus: string) => {
     setUpdatingId(id);
     setStatuses(prev => ({ ...prev, [id]: newStatus }));
-    await supabase.from('contact_submissions').update({ status: newStatus }).eq('id', id);
+    await supabase().from('contact_submissions').update({ status: newStatus }).eq('id', id);
     setLocalSubmissions(subs => subs.map(s => s.id === id ? { ...s, status: newStatus } : s));
     setUpdatingId(null);
   };
@@ -29,7 +29,7 @@ const ContactSubmissionList: React.FC<ContactSubmissionListProps> = ({ contactSu
 
   const handleNotesBlur = async (id: string) => {
     setUpdatingId(id);
-    await supabase.from('contact_submissions').update({ admin_notes: notes[id] }).eq('id', id);
+    await supabase().from('contact_submissions').update({ admin_notes: notes[id] }).eq('id', id);
     setLocalSubmissions(subs => subs.map(s => s.id === id ? { ...s, admin_notes: notes[id] } : s));
     setUpdatingId(null);
   };
@@ -37,9 +37,23 @@ const ContactSubmissionList: React.FC<ContactSubmissionListProps> = ({ contactSu
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this contact submission?')) return;
     setUpdatingId(id);
-    await supabase.from('contact_submissions').delete().eq('id', id);
-    setLocalSubmissions(subs => subs.filter(s => s.id !== id));
-    setUpdatingId(null);
+    
+    try {
+      const { error } = await supabase().from('contact_submissions').delete().eq('id', id);
+      
+      if (error) {
+        console.error('Error deleting contact submission:', error);
+        alert('Failed to delete contact submission. Please try again.');
+        return;
+      }
+      
+      setLocalSubmissions(subs => subs.filter(s => s.id !== id));
+    } catch (err) {
+      console.error('Unexpected error deleting contact submission:', err);
+      alert('An unexpected error occurred. Please try again.');
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
   const handleRespondedCheckbox = async (id: string, checked: boolean) => {
