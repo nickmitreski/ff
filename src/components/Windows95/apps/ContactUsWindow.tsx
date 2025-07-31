@@ -32,7 +32,7 @@ const ContactUsWindow: React.FC = () => {
         message_length: formData.message.length
       });
 
-      const { error } = await supabase.from('contact_submissions').insert([
+      const { error } = await supabase().from('contact_submissions').insert([
         {
           name: formData.name,
           email: formData.email,
@@ -152,37 +152,7 @@ const ContactUsWindow: React.FC = () => {
         </form>
       )}
 
-      {/* Only show contact info if not success */}
-      {status !== 'success' && (
-        <div className="win95-contact-info">
-          <div className="win95-contact-info-header">
-            <h3>Other Ways to Reach Us</h3>
-          </div>
-          <div className="win95-contact-info-content">
-            <div className="win95-contact-info-item">
-              <div className="win95-contact-info-icon">📧</div>
-              <div className="win95-contact-info-text">
-                <div className="win95-contact-info-label">Email:</div>
-                <div className="win95-contact-info-value">hello@flashforward.com</div>
-              </div>
-            </div>
-            <div className="win95-contact-info-item">
-              <div className="win95-contact-info-icon">📞</div>
-              <div className="win95-contact-info-text">
-                <div className="win95-contact-info-label">Phone:</div>
-                <div className="win95-contact-info-value">(555) 123-4567</div>
-              </div>
-            </div>
-            <div className="win95-contact-info-item">
-              <div className="win95-contact-info-icon">🌐</div>
-              <div className="win95-contact-info-text">
-                <div className="win95-contact-info-label">Social:</div>
-                <div className="win95-contact-info-value">@flashforwardagency</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       <style>{`
         .win95-contact {
@@ -306,59 +276,7 @@ const ContactUsWindow: React.FC = () => {
           font-size: 12px;
         }
         
-        .win95-contact-info {
-          border: 2px solid;
-          border-color: var(--win95-border-outer-light) var(--win95-border-outer-dark) var(--win95-border-outer-dark) var(--win95-border-outer-light);
-          background: white;
-        }
-        
-        .win95-contact-info-header {
-          background: var(--win95-window-bg);
-          padding: 5px 10px;
-          border-bottom: 1px solid var(--win95-border-inner-dark);
-        }
-        
-        .win95-contact-info-header h3 {
-          margin: 0;
-          font-size: 12px;
-        }
-        
-        .win95-contact-info-content {
-          padding: 10px;
-        }
-        
-        .win95-contact-info-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 8px;
-        }
-        
-        .win95-contact-info-item:last-child {
-          margin-bottom: 0;
-        }
-        
-        .win95-contact-info-icon {
-          font-size: 16px;
-          width: 24px;
-          height: 24px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        
-        .win95-contact-info-text {
-          flex: 1;
-        }
-        
-        .win95-contact-info-label {
-          font-size: 11px;
-          font-weight: bold;
-        }
-        
-        .win95-contact-info-value {
-          font-size: 12px;
-        }
+
       `}</style>
     </div>
   );
