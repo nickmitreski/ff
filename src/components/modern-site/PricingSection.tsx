@@ -65,8 +65,8 @@ const pricingPlans: PricingPlan[] = [
     description: "Perfect for small businesses looking to establish their digital presence.",
     features: [
       "Custom Website Design",
+      "Up to 5 pages",
       "Mobile Responsive",
-      "Contact Form",
       "Basic SEO Setup",
       "1 Month Support"
     ],
@@ -74,30 +74,33 @@ const pricingPlans: PricingPlan[] = [
   },
   {
     title: "Pro",
-    price: "$2,499",
+    price: "$1,499",
     description: "Ideal for growing businesses ready to expand their digital footprint.",
     features: [
       "Everything in Basic",
-      "E-commerce Integration",
-      "Content Management System",
-      "Advanced SEO",
+      "Advanced onsite SEO",
+      "Up to 10 pages",
       "3 Months Support",
-      "Social Media Setup"
+      "Social Media Setup",
+      "Promotional or explainer video for website",
+      "Analytics Setup"
     ],
     color: colors.text.white
   },
   {
     title: "Enterprise",
-    price: "$4,999",
+    price: "$2,499",
     description: "Comprehensive solution for established businesses seeking digital excellence.",
     features: [
       "Everything in Pro",
       "Custom Features",
-      "API Integration",
+      "API Integrations",
       "Performance Optimization",
+      "Advanced onsite SEO",
       "6 Months Support",
       "Analytics Setup",
-      "Training & Documentation"
+      "Custom backend CRM / Dashboard",
+      "2 x custom ai automation set ups"
     ],
     color: colors.text.white
   }

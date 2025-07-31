@@ -16,16 +16,16 @@ const PricingWindow: React.FC = () => {
       description: 'Perfect for small businesses looking to establish their digital presence.',
       price: '$999',
       color: '#008CFF',
-      features: ['Custom Website Design', 'Mobile Responsive', 'Contact Form', 'Basic SEO Setup', '1 Month Support']
+      features: ['Custom Website Design', 'Up to 5 pages', 'Mobile Responsive', 'Basic SEO Setup', '1 Month Support']
     },
     {
       id: 'pro',
       title: 'Pro',
       icon: '/BRANDING.png',
       description: 'Ideal for growing businesses ready to expand their digital footprint.',
-      price: '$2,499',
+      price: '$1,499',
       color: '#FFCC00',
-      features: ['Everything in Basic', 'E-commerce Integration', 'Content Management System', 'Advanced SEO', '3 Months Support', 'Social Media Setup'],
+      features: ['Everything in Basic', 'Advanced onsite SEO', 'Up to 10 pages', '3 Months Support', 'Social Media Setup', 'Promotional or explainer video for website', 'Analytics Setup'],
       popular: true
     },
     {
@@ -33,9 +33,9 @@ const PricingWindow: React.FC = () => {
       title: 'Enterprise',
       icon: '/AI.png',
       description: 'Comprehensive solution for established businesses seeking digital excellence.',
-      price: '$4,999',
+      price: '$2,499',
       color: '#00CC66',
-      features: ['Everything in Pro', 'Custom Features', 'API Integration', 'Performance Optimization', '6 Months Support', 'Analytics Setup', 'Training & Documentation']
+      features: ['Everything in Pro', 'Custom Features', 'API Integrations', 'Performance Optimization', 'Advanced onsite SEO', '6 Months Support', 'Analytics Setup', 'Custom backend CRM / Dashboard', '2 x custom ai automation set ups']
     }
   ];
 
