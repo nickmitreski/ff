@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { colors, typography } from '../../../theme/theme';
-import { X } from 'lucide-react';
+import { X, Mail, CheckCircle, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '../../../lib/supabase';
+import { posthog } from '../../../lib/posthog';
 
 interface VideosWorkPopupProps {
   onClose: () => void;
@@ -90,6 +92,57 @@ const VideosWorkPopup: React.FC<VideosWorkPopupProps> = ({ onClose }) => {
   const [selectedVideo, setSelectedVideo] = useState<number | null>(null);
   const [showOffer, setShowOffer] = useState(false);
   const [selectedOfferVideo, setSelectedOfferVideo] = useState<number | null>(null);
+  const [enquiryEmail, setEnquiryEmail] = useState('');
+  const [enquiryStatus, setEnquiryStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [enquiryError, setEnquiryError] = useState('');
+
+  const handleEnquirySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!enquiryEmail.trim()) return;
+
+    setEnquiryStatus('submitting');
+    setEnquiryError('');
+
+    try {
+      // Track enquiry submission with PostHog
+      posthog.capture('promotional_video_enquiry_submitted', {
+        email: enquiryEmail,
+        source: 'videos_work_popup'
+      });
+
+      const { error } = await supabase().from('contact_submissions').insert([
+        {
+          name: 'Promotional Video Enquiry',
+          email: enquiryEmail,
+          message: 'Interested in the $600 promotional video special offer from the Videos section.',
+          source: 'promotional_video_special',
+          timestamp: new Date().toISOString()
+        }
+      ]);
+
+      if (error) throw error;
+
+      setEnquiryStatus('success');
+      setEnquiryEmail('');
+      
+      // Track successful submission
+      posthog.capture('promotional_video_enquiry_success');
+      
+      // Reset status after 3 seconds
+      setTimeout(() => {
+        setEnquiryStatus('idle');
+      }, 3000);
+    } catch (err) {
+      setEnquiryStatus('error');
+      setEnquiryError('Failed to submit enquiry. Please try again.');
+      console.error('Error submitting enquiry:', err);
+      
+      // Track error
+      posthog.capture('promotional_video_enquiry_error', {
+        error: err instanceof Error ? err.message : 'Unknown error'
+      });
+    }
+  };
 
   return (
     <motion.div
@@ -263,6 +316,58 @@ const VideosWorkPopup: React.FC<VideosWorkPopupProps> = ({ onClose }) => {
                       <li>• Custom backing track & sound fx</li>
                       <li>• High quality generated visuals (you can even take photos or send any visuals you want, we can reproduce them in high quality videos, in the same setting or new custom settings)</li>
                     </ul>
+                  </div>
+
+                  {/* Enquiry Form */}
+                  <div className="bg-black/20 border border-gray-800 rounded-lg p-6 mb-6">
+                    <h4 className="text-white text-lg font-medium mb-4 flex items-center gap-2">
+                      <Mail className="h-5 w-5 text-yellow-400" />
+                      Enquire About This Offer
+                    </h4>
+                    {enquiryStatus === 'success' ? (
+                      <div className="bg-green-500/10 border border-green-500/20 text-green-400 p-4 rounded-lg text-center">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          <CheckCircle className="h-5 w-5" />
+                          <span className="font-medium">Enquiry Sent!</span>
+                        </div>
+                        <p className="text-sm">We'll get back to you shortly about your promotional video enquiry.</p>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleEnquirySubmit} className="space-y-4">
+                        {enquiryStatus === 'error' && (
+                          <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded text-sm">
+                            {enquiryError}
+                          </div>
+                        )}
+                        <div>
+                          <label className="block text-white text-sm font-medium mb-2">
+                            Email Address
+                          </label>
+                          <input
+                            type="email"
+                            value={enquiryEmail}
+                            onChange={(e) => setEnquiryEmail(e.target.value)}
+                            placeholder="Enter your email to enquire"
+                            required
+                            className="w-full px-4 py-3 bg-black border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 transition-colors"
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          disabled={enquiryStatus === 'submitting' || !enquiryEmail.trim()}
+                          className="w-full bg-yellow-500 text-black py-3 rounded-lg font-medium hover:bg-yellow-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                          {enquiryStatus === 'submitting' ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Sending Enquiry...
+                            </>
+                          ) : (
+                            'Send Enquiry'
+                          )}
+                        </button>
+                      </form>
+                    )}
                   </div>
 
                   <h4 className="text-white text-lg font-medium mb-4">Examples:</h4>
