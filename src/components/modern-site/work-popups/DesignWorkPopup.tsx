@@ -56,7 +56,8 @@ const DesignWorkPopup: React.FC<DesignWorkPopupProps> = ({ onClose }) => {
               <img
                 src="/Websites_design.png"
                 alt="Website Designs"
-                className="w-48 h-48 object-cover rounded-lg"
+                className="max-w-full h-auto rounded-lg"
+                style={{ maxHeight: '400px' }}
               />
             </div>
           </div>
@@ -73,7 +74,8 @@ const DesignWorkPopup: React.FC<DesignWorkPopupProps> = ({ onClose }) => {
               <img
                 src="/Mobile_App.png"
                 alt="Mobile App UI Designs"
-                className="w-48 h-48 object-cover rounded-lg"
+                className="max-w-full h-auto rounded-lg"
+                style={{ maxHeight: '400px' }}
               />
             </div>
           </div>
@@ -90,7 +92,8 @@ const DesignWorkPopup: React.FC<DesignWorkPopupProps> = ({ onClose }) => {
               <img
                 src="/Logo_Designs.png"
                 alt="Logo Designs"
-                className="w-48 h-48 object-cover rounded-lg"
+                className="max-w-full h-auto rounded-lg"
+                style={{ maxHeight: '400px' }}
               />
             </div>
           </div>
@@ -107,7 +110,8 @@ const DesignWorkPopup: React.FC<DesignWorkPopupProps> = ({ onClose }) => {
               <img
                 src="/Print_Designs.png"
                 alt="Print Designs"
-                className="w-48 h-48 object-cover rounded-lg"
+                className="max-w-full h-auto rounded-lg"
+                style={{ maxHeight: '400px' }}
               />
             </div>
           </div>
@@ -124,7 +128,8 @@ const DesignWorkPopup: React.FC<DesignWorkPopupProps> = ({ onClose }) => {
               <img
                 src="/Posters.png"
                 alt="Posters"
-                className="w-48 h-48 object-cover rounded-lg"
+                className="max-w-full h-auto rounded-lg"
+                style={{ maxHeight: '400px' }}
               />
             </div>
           </div>
@@ -141,7 +146,8 @@ const DesignWorkPopup: React.FC<DesignWorkPopupProps> = ({ onClose }) => {
               <img
                 src="/Flyers.png"
                 alt="Flyers"
-                className="w-48 h-48 object-cover rounded-lg"
+                className="max-w-full h-auto rounded-lg"
+                style={{ maxHeight: '400px' }}
               />
             </div>
           </div>
@@ -158,7 +164,8 @@ const DesignWorkPopup: React.FC<DesignWorkPopupProps> = ({ onClose }) => {
               <img
                 src="/Quotation_Invoices.png"
                 alt="Quotation & Invoice Designs"
-                className="w-48 h-48 object-cover rounded-lg"
+                className="max-w-full h-auto rounded-lg"
+                style={{ maxHeight: '400px' }}
               />
             </div>
           </div>
