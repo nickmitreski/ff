@@ -168,11 +168,16 @@ const SeoAnalyzer: React.FC = () => {
 
         if (error) {
           console.error('Error fetching SEO tools:', error);
+          // Fallback to hardcoded data if database is not ready
+          setSeoTools(getFallbackSeoTools());
         } else {
-          setSeoTools((data as unknown as SeoTool[]) || []);
+          console.log('SEO tools fetched:', data);
+          setSeoTools((data as unknown as SeoTool[]) || getFallbackSeoTools());
         }
       } catch (err) {
         console.error('Error fetching SEO tools:', err);
+        // Fallback to hardcoded data
+        setSeoTools(getFallbackSeoTools());
       } finally {
         setLoadingTools(false);
       }
@@ -180,6 +185,218 @@ const SeoAnalyzer: React.FC = () => {
 
     fetchSeoTools();
   }, []);
+
+  // Fallback SEO tools data in case database is not ready
+  const getFallbackSeoTools = (): SeoTool[] => [
+    {
+      id: '1',
+      title: 'Free SEO Audit Tool',
+      url: 'https://seomator.com/free-seo-audit-tool',
+      description: 'Comprehensive website SEO audit with detailed recommendations',
+      category: 'Audit',
+      is_active: true
+    },
+    {
+      id: '2',
+      title: 'Google SERP Rank Checker',
+      url: 'https://seomator.com/google-serp-rank-checker',
+      description: 'Check your website ranking positions in Google search results',
+      category: 'Ranking',
+      is_active: true
+    },
+    {
+      id: '3',
+      title: 'Free Keyword Research Tool',
+      url: 'https://seomator.com/free-keyword-research-tool',
+      description: 'Find relevant keywords for your content strategy',
+      category: 'Keywords',
+      is_active: true
+    },
+    {
+      id: '4',
+      title: 'Free Backlink Checker Tool',
+      url: 'https://seomator.com/free-backlink-checker-tool',
+      description: 'Analyze your website backlink profile and quality',
+      category: 'Backlinks',
+      is_active: true
+    },
+    {
+      id: '5',
+      title: 'Bing SERP Rank Checker',
+      url: 'https://seomator.com/bing-serp-rank-checker',
+      description: 'Check your website ranking positions in Bing search results',
+      category: 'Ranking',
+      is_active: true
+    },
+    {
+      id: '6',
+      title: 'Website Crawl Test',
+      url: 'https://seomator.com/website-crawl-test',
+      description: 'Test how search engines crawl and index your website',
+      category: 'Technical',
+      is_active: true
+    },
+    {
+      id: '7',
+      title: 'Mobile Friendly Test',
+      url: 'https://seomator.com/mobile-friendly-test',
+      description: 'Check if your website is mobile-friendly for search engines',
+      category: 'Mobile',
+      is_active: true
+    },
+    {
+      id: '8',
+      title: 'HTTPS Header Checker',
+      url: 'https://seomator.com/https-header-checker',
+      description: 'Verify your website security headers and SSL configuration',
+      category: 'Security',
+      is_active: true
+    },
+    {
+      id: '9',
+      title: 'Keyword Density Checker',
+      url: 'https://seomator.com/keyword-density-checker',
+      description: 'Analyze keyword usage and density in your content',
+      category: 'Content',
+      is_active: true
+    },
+    {
+      id: '10',
+      title: 'Internal Link Checker',
+      url: 'https://seomator.com/internal-link-checker',
+      description: 'Review and optimize your internal linking structure',
+      category: 'Links',
+      is_active: true
+    },
+    {
+      id: '11',
+      title: 'Free Website Speed Test',
+      url: 'https://seomator.com/free-website-speed-test',
+      description: 'Test your website loading speed and performance',
+      category: 'Performance',
+      is_active: true
+    },
+    {
+      id: '12',
+      title: 'Meta Tags Checker',
+      url: 'https://seomator.com/meta-tags-checker',
+      description: 'Analyze and optimize your meta tags for better SEO',
+      category: 'Meta Tags',
+      is_active: true
+    },
+    {
+      id: '13',
+      title: 'Sitemap Finder',
+      url: 'https://seomator.com/sitemap-finder',
+      description: 'Discover and analyze website sitemaps',
+      category: 'Technical',
+      is_active: true
+    },
+    {
+      id: '14',
+      title: 'Website Technology Checker',
+      url: 'https://seomator.com/website-technology-checker',
+      description: 'Identify technologies used on any website',
+      category: 'Technical',
+      is_active: true
+    },
+    {
+      id: '15',
+      title: 'Organic Traffic Checker Free',
+      url: 'https://seomator.com/organic-traffic-checker-free',
+      description: 'Estimate organic search traffic for any website',
+      category: 'Analytics',
+      is_active: true
+    },
+    {
+      id: '16',
+      title: 'Free Email Verification Tool',
+      url: 'https://seomator.com/free-email-verification-tool',
+      description: 'Verify email addresses for marketing campaigns',
+      category: 'Marketing',
+      is_active: true
+    },
+    {
+      id: '17',
+      title: 'Free Domain Authority Checker',
+      url: 'https://seomator.com/free-domain-authority-checker',
+      description: 'Check domain authority and page authority scores',
+      category: 'Authority',
+      is_active: true
+    },
+    {
+      id: '18',
+      title: 'Anchor Text Link Extractor Tool',
+      url: 'https://seomator.com/anchor-text-link-extractor-tool',
+      description: 'Extract and analyze anchor text from backlinks',
+      category: 'Backlinks',
+      is_active: true
+    },
+    {
+      id: '19',
+      title: 'Google Cache Date Checker Tool',
+      url: 'https://seomator.com/google-cache-date-checker-tool',
+      description: 'Check when Google last cached your pages',
+      category: 'Technical',
+      is_active: true
+    },
+    {
+      id: '20',
+      title: 'URL Redirect Checker',
+      url: 'https://seomator.com/url-redirect-checker',
+      description: 'Analyze redirect chains and status codes',
+      category: 'Technical',
+      is_active: true
+    },
+    {
+      id: '21',
+      title: 'Company Logo API',
+      url: 'https://seomator.com/company-logo-api',
+      description: 'API for retrieving company logos and branding',
+      category: 'API',
+      is_active: true
+    },
+    {
+      id: '22',
+      title: 'YouTube Rank Checker',
+      url: 'https://seomator.com/youtube-rank-checker',
+      description: 'Check YouTube video rankings in search results',
+      category: 'Video',
+      is_active: true
+    },
+    {
+      id: '23',
+      title: 'Competitor Keyword Research Tool',
+      url: 'https://seomator.com/competitor-keyword-research-tool',
+      description: 'Research keywords your competitors are ranking for',
+      category: 'Competitive',
+      is_active: true
+    },
+    {
+      id: '24',
+      title: 'Google AI Overview Keywords Checker',
+      url: 'https://seomator.com/google-ai-overview-keywords-checker',
+      description: 'Check keywords that trigger AI overviews in Google',
+      category: 'AI',
+      is_active: true
+    },
+    {
+      id: '25',
+      title: 'Free LLMs TXT Generator',
+      url: 'https://seomator.com/free-llms-txt-generator',
+      description: 'Generate content using AI language models',
+      category: 'AI',
+      is_active: true
+    },
+    {
+      id: '26',
+      title: 'Free SEO Keyword Research SERP Analyzer GPT',
+      url: 'https://chatgpt.com/g/g-Iz6TghxNT-free-seo-keyword-research-serp-analyzer-gpt',
+      description: 'AI-powered SEO keyword research and SERP analysis',
+      category: 'AI',
+      is_active: true
+    }
+  ];
 
   const getStatusColor = (status: 'good' | 'warning' | 'error') => {
     switch (status) {
@@ -436,25 +653,35 @@ const SeoAnalyzer: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {Object.entries(groupedTools).map(([category, tools]) => (
-              <div key={category} className="border border-gray-800 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-[#0CF2A0] mb-3 uppercase tracking-wide">{category}</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                  {tools.map((tool) => (
-                    <a
-                      key={tool.id}
-                      href={tool.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-3 py-2 bg-black/30 border border-gray-800 rounded text-sm text-gray-300 hover:border-[#0CF2A0] hover:text-white transition-colors group"
-                    >
-                      <ExternalLink className="h-3 w-3 text-gray-500 group-hover:text-[#0CF2A0] transition-colors" />
-                      <span className="truncate">{tool.title}</span>
-                    </a>
-                  ))}
-                </div>
+            {seoTools.length === 0 ? (
+              <div className="text-center py-8 text-gray-400">
+                <p>No SEO tools available. Please check the database connection.</p>
+                <p className="text-sm mt-2">Tools loaded: {seoTools.length}</p>
               </div>
-            ))}
+            ) : (
+              Object.entries(groupedTools).map(([category, tools]) => (
+                <div key={category} className="border border-gray-800 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-[#0CF2A0] mb-3 uppercase tracking-wide">
+                    {category} ({tools.length} tools)
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {tools.map((tool) => (
+                      <a
+                        key={tool.id}
+                        href={tool.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-3 py-2 bg-black/30 border border-gray-800 rounded text-sm text-gray-300 hover:border-[#0CF2A0] hover:text-white transition-colors group"
+                        title={tool.description}
+                      >
+                        <ExternalLink className="h-3 w-3 text-gray-500 group-hover:text-[#0CF2A0] transition-colors" />
+                        <span className="truncate">{tool.title}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
       </div>
