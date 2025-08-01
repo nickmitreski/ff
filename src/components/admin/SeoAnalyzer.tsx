@@ -652,35 +652,28 @@ const SeoAnalyzer: React.FC = () => {
             <span className="ml-2 text-gray-400">Loading SEO tools...</span>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div>
             {seoTools.length === 0 ? (
               <div className="text-center py-8 text-gray-400">
                 <p>No SEO tools available. Please check the database connection.</p>
                 <p className="text-sm mt-2">Tools loaded: {seoTools.length}</p>
               </div>
             ) : (
-              Object.entries(groupedTools).map(([category, tools]) => (
-                <div key={category} className="border border-gray-800 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-[#0CF2A0] mb-3 uppercase tracking-wide">
-                    {category} ({tools.length} tools)
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {tools.map((tool) => (
-                      <a
-                        key={tool.id}
-                        href={tool.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-2 bg-black/30 border border-gray-800 rounded text-sm text-gray-300 hover:border-[#0CF2A0] hover:text-white transition-colors group"
-                        title={tool.description}
-                      >
-                        <ExternalLink className="h-3 w-3 text-gray-500 group-hover:text-[#0CF2A0] transition-colors" />
-                        <span className="truncate">{tool.title}</span>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              ))
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+                {seoTools.map((tool) => (
+                  <a
+                    key={tool.id}
+                    href={tool.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center gap-1 px-2 py-3 bg-black/30 border border-gray-800 rounded text-xs text-gray-300 hover:border-[#0CF2A0] hover:text-white transition-colors group text-center"
+                    title={`${tool.title} - ${tool.description}`}
+                  >
+                    <ExternalLink className="h-3 w-3 text-gray-500 group-hover:text-[#0CF2A0] transition-colors" />
+                    <span className="leading-tight">{tool.title}</span>
+                  </a>
+                ))}
+              </div>
             )}
           </div>
         )}
