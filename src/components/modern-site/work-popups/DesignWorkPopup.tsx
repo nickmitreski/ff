@@ -45,67 +45,64 @@ const DesignWorkPopup: React.FC<DesignWorkPopupProps> = ({ onClose }) => {
         
         <div className="p-6 space-y-8">
           {/* Mobile App UI Design */}
-          <div className="flex items-center gap-6 p-4 bg-black/30 border border-gray-800 rounded-lg hover:border-green-400 transition-colors">
-            <div className="flex-shrink-0">
+          <div className="p-4 bg-black/30 border border-gray-800 rounded-lg hover:border-green-400 transition-colors">
+            <h3 className={`${typography.fontSize.xl} ${typography.fontFamily.light} ${typography.tracking.tight} text-white mb-2`}>
+              Mobile App UI Design
+            </h3>
+            <p className="text-gray-400 text-sm mb-4">
+              Modern, intuitive mobile app interfaces designed for optimal user experience and engagement.
+            </p>
+            <div className="flex justify-center">
               <img
                 src="/apps.png"
                 alt="Mobile App UI Design"
-                className="w-24 h-24 object-cover rounded-lg"
+                className="w-48 h-48 object-cover rounded-lg"
               />
-            </div>
-            <div className="flex-1">
-              <h3 className={`${typography.fontSize.xl} ${typography.fontFamily.light} ${typography.tracking.tight} text-white mb-2`}>
-                Mobile App UI Design
-              </h3>
-              <p className="text-gray-400 text-sm">
-                Modern, intuitive mobile app interfaces designed for optimal user experience and engagement.
-              </p>
             </div>
           </div>
 
           {/* Webapp UI Kits */}
-          <div className="flex items-center gap-6 p-4 bg-black/30 border border-gray-800 rounded-lg hover:border-green-400 transition-colors">
-            <div className="flex-shrink-0">
+          <div className="p-4 bg-black/30 border border-gray-800 rounded-lg hover:border-green-400 transition-colors">
+            <h3 className={`${typography.fontSize.xl} ${typography.fontFamily.light} ${typography.tracking.tight} text-white mb-2`}>
+              Webapp UI Kits
+            </h3>
+            <p className="text-gray-400 text-sm mb-4">
+              Comprehensive UI component libraries and design systems for web applications.
+            </p>
+            <div className="flex justify-center">
               <img
                 src="/Web_Apps.png"
                 alt="Webapp UI Kits"
-                className="w-24 h-24 object-cover rounded-lg"
+                className="w-48 h-48 object-cover rounded-lg"
               />
-            </div>
-            <div className="flex-1">
-              <h3 className={`${typography.fontSize.xl} ${typography.fontFamily.light} ${typography.tracking.tight} text-white mb-2`}>
-                Webapp UI Kits
-              </h3>
-              <p className="text-gray-400 text-sm">
-                Comprehensive UI component libraries and design systems for web applications.
-              </p>
             </div>
           </div>
 
           {/* Website Designs */}
-          <div className="flex items-center gap-6 p-4 bg-black/30 border border-gray-800 rounded-lg hover:border-green-400 transition-colors">
-            <div className="flex-shrink-0">
+          <div className="p-4 bg-black/30 border border-gray-800 rounded-lg hover:border-green-400 transition-colors">
+            <h3 className={`${typography.fontSize.xl} ${typography.fontFamily.light} ${typography.tracking.tight} text-white mb-2`}>
+              Website Designs
+            </h3>
+            <p className="text-gray-400 text-sm mb-4">
+              Custom website designs that combine aesthetics with functionality for modern businesses.
+            </p>
+            <div className="flex justify-center">
               <img
                 src="/website_designs.png"
                 alt="Website Designs"
-                className="w-24 h-24 object-cover rounded-lg"
+                className="w-48 h-48 object-cover rounded-lg"
               />
-            </div>
-            <div className="flex-1">
-              <h3 className={`${typography.fontSize.xl} ${typography.fontFamily.light} ${typography.tracking.tight} text-white mb-2`}>
-                Website Designs
-              </h3>
-              <p className="text-gray-400 text-sm">
-                Custom website designs that combine aesthetics with functionality for modern businesses.
-              </p>
             </div>
           </div>
 
           {/* Logo Designs Section */}
-          <div className="border-t border-gray-800 pt-8">
-            <h3 className={`${typography.fontSize.xl} ${typography.fontFamily.light} ${typography.tracking.tight} text-white mb-6 text-center`}>
+          <div className="p-4 bg-black/30 border border-gray-800 rounded-lg hover:border-green-400 transition-colors">
+            <h3 className={`${typography.fontSize.xl} ${typography.fontFamily.light} ${typography.tracking.tight} text-white mb-2`}>
               Logo Designs
             </h3>
+            <p className="text-gray-400 text-sm mb-4">
+              Custom logo designs that capture brand identity and create memorable visual impressions.
+            </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {logoImages.map((src, idx) => (
                 <button
