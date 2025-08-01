@@ -173,7 +173,7 @@ export const Frame = memo(({ onYearSelect, onYearHover }: FrameProps): JSX.Eleme
             <div 
               className="absolute inset-0 w-full h-full bg-cover bg-center md:w-full md:h-full w-screen h-screen"
               style={{ 
-                backgroundImage: "url(/bg.webp)",
+                backgroundImage: "url(/choice_screen_new.webp)",
                 zIndex: 3
               }}
             />
