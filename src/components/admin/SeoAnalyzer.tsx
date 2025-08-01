@@ -1,7 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, TrendingUp, Smartphone, Shield, FileText, Code, Loader2, CheckCircle, AlertCircle, XCircle, ExternalLink, Globe, Zap, Target } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 // Types
+interface SeoTool {
+  id: string;
+  title: string;
+  url: string;
+  description: string;
+  category: string;
+  is_active: boolean;
+}
+
 interface PageSpeedMetrics {
   score: number;
   metrics: {
@@ -133,6 +143,8 @@ const SeoAnalyzer: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'performance' | 'serp' | 'meta' | 'mobile' | 'security'>('overview');
+  const [seoTools, setSeoTools] = useState<SeoTool[]>([]);
+  const [loadingTools, setLoadingTools] = useState(true);
   
   // Analysis results
   const [pageSpeedData, setPageSpeedData] = useState<PageSpeedMetrics | null>(null);
@@ -142,6 +154,32 @@ const SeoAnalyzer: React.FC = () => {
   const [security, setSecurity] = useState<SecurityData | null>(null);
   const [content, setContent] = useState<ContentAnalysisData | null>(null);
   const [aiRecommendations, setAiRecommendations] = useState<string[]>([]);
+
+  // Fetch SEO tools on component mount
+  useEffect(() => {
+    const fetchSeoTools = async () => {
+      try {
+        const { data, error } = await supabase()
+          .from('seo_tools')
+          .select('*')
+          .eq('is_active', true)
+          .order('category', { ascending: true })
+          .order('title', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching SEO tools:', error);
+        } else {
+          setSeoTools((data as unknown as SeoTool[]) || []);
+        }
+      } catch (err) {
+        console.error('Error fetching SEO tools:', err);
+      } finally {
+        setLoadingTools(false);
+      }
+    };
+
+    fetchSeoTools();
+  }, []);
 
   const getStatusColor = (status: 'good' | 'warning' | 'error') => {
     switch (status) {
@@ -363,15 +401,62 @@ const SeoAnalyzer: React.FC = () => {
     }
   };
 
+  // Group SEO tools by category
+  const groupedTools = seoTools.reduce((acc, tool) => {
+    if (!acc[tool.category]) {
+      acc[tool.category] = [];
+    }
+    acc[tool.category].push(tool);
+    return acc;
+  }, {} as Record<string, SeoTool[]>);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-light tracking-tight">SEO Analyzer</h2>
+          <h2 className="text-2xl font-light tracking-tight">SEO Analyser</h2>
           <p className="text-gray-400">
             Comprehensive SEO analysis with PageSpeed, SERP data, and AI recommendations
           </p>
         </div>
+      </div>
+
+      {/* SEO Tools Section */}
+      <div className="bg-[#1a1a1a] p-6 rounded-lg border border-gray-800">
+        <div className="flex items-center gap-2 mb-4">
+          <Globe className="h-5 w-5 text-[#0CF2A0]" />
+          <h3 className="text-lg font-light tracking-tight">SEO Tools</h3>
+        </div>
+        <p className="text-gray-400 mb-4">Quick access to essential SEO tools and resources</p>
+        
+        {loadingTools ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-[#0CF2A0]" />
+            <span className="ml-2 text-gray-400">Loading SEO tools...</span>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {Object.entries(groupedTools).map(([category, tools]) => (
+              <div key={category} className="border border-gray-800 rounded-lg p-4">
+                <h4 className="text-sm font-medium text-[#0CF2A0] mb-3 uppercase tracking-wide">{category}</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {tools.map((tool) => (
+                    <a
+                      key={tool.id}
+                      href={tool.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-2 bg-black/30 border border-gray-800 rounded text-sm text-gray-300 hover:border-[#0CF2A0] hover:text-white transition-colors group"
+                    >
+                      <ExternalLink className="h-3 w-3 text-gray-500 group-hover:text-[#0CF2A0] transition-colors" />
+                      <span className="truncate">{tool.title}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* URL Input */}

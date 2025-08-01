@@ -879,7 +879,7 @@ const AdminPage: React.FC = () => {
               <TabButton tab="notes" icon={Sticky} label="Notes" />
               <TabButton tab="coming-soon" icon={Bell} label="Coming Soon" />
               <TabButton tab="seo-audits" icon={Search} label="SEO Audits" />
-              <TabButton tab="seo-analyzer" icon={Search} label="SEO Analyzer" />
+              <TabButton tab="seo-analyzer" icon={Search} label="SEO Analyser" />
               <TabButton tab="supabase-status" icon={Database} label="Supabase Status" />
             </div>
             
