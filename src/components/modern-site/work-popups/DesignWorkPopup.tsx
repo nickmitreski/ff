@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { colors, typography } from '../../../theme/theme';
-import { X } from 'lucide-react';
+import { X, Mail, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '../../../lib/supabase';
+import { posthog } from '../../../lib/posthog';
 
 interface DesignWorkPopupProps {
   onClose: () => void;
@@ -12,8 +14,73 @@ const DesignWorkPopup: React.FC<DesignWorkPopupProps> = ({ onClose }) => {
   const isMobile = window.innerWidth <= 768;
   const [selectedLogo, setSelectedLogo] = useState<number | null>(null);
   
+  // Design request form state
+  const [designRequestEmail, setDesignRequestEmail] = useState('');
+  const [designRequestService, setDesignRequestService] = useState('');
+  const [designRequestDetails, setDesignRequestDetails] = useState('');
+  const [designRequestStatus, setDesignRequestStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [designRequestError, setDesignRequestError] = useState('');
+  
   // Logo designs from branding popup (first 2 rows = 8 logos)
   const logoImages = Array.from({ length: 8 }, (_, i) => `/Branding/logo${i + 1}.png`);
+  
+  const designServices = [
+    'Website Designs',
+    'Mobile App UI Designs', 
+    'Logo Designs',
+    'Print Designs',
+    'Posters',
+    'Flyers',
+    'Quotation & Invoice Designs'
+  ];
+  
+  const handleDesignRequestSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setDesignRequestStatus('submitting');
+    setDesignRequestError('');
+
+    try {
+      // Track design request submission with PostHog
+      posthog.capture('design_request_submitted', {
+        email: designRequestEmail,
+        service_type: designRequestService,
+        has_details: !!designRequestDetails.trim()
+      });
+
+      const { error } = await supabase().from('design_requests').insert([
+        {
+          email: designRequestEmail,
+          service_type: designRequestService,
+          request_details: designRequestDetails,
+          timestamp: new Date().toISOString()
+        }
+      ]);
+
+      if (error) throw error;
+
+      setDesignRequestStatus('success');
+      setDesignRequestEmail('');
+      setDesignRequestService('');
+      setDesignRequestDetails('');
+      
+      // Track successful submission
+      posthog.capture('design_request_success');
+      
+      // Reset status after 3 seconds
+      setTimeout(() => {
+        setDesignRequestStatus('idle');
+      }, 3000);
+    } catch (err) {
+      setDesignRequestStatus('error');
+      setDesignRequestError('Failed to submit request. Please try again.');
+      console.error('Error submitting design request:', err);
+      
+      // Track error
+      posthog.capture('design_request_error', {
+        error: err instanceof Error ? err.message : 'Unknown error'
+      });
+    }
+  };
   
   return (
     <motion.div
@@ -168,6 +235,96 @@ const DesignWorkPopup: React.FC<DesignWorkPopupProps> = ({ onClose }) => {
                 style={{ maxHeight: '400px' }}
               />
             </div>
+          </div>
+
+          {/* Design Request Section */}
+          <div className="p-6 bg-black/40 border border-green-400/30 rounded-lg">
+            <div className="flex items-center gap-2 mb-4">
+              <Mail size={20} className="text-green-400" />
+              <h3 className={`${typography.fontSize.xl} ${typography.fontFamily.light} ${typography.tracking.tight} text-white`}>
+                Request Design Work
+              </h3>
+            </div>
+            <p className="text-gray-400 text-sm mb-6">
+              To view our design work, send us a request with what you want to see.
+            </p>
+            
+            <form onSubmit={handleDesignRequestSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm text-gray-300 mb-2">Email Address</label>
+                <input
+                  type="email"
+                  value={designRequestEmail}
+                  onChange={(e) => setDesignRequestEmail(e.target.value)}
+                  required
+                  className="w-full bg-[#222] text-white border border-gray-700 rounded px-3 py-2 text-sm focus:border-green-400 focus:outline-none transition-colors"
+                  placeholder="your@email.com"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm text-gray-300 mb-2">Design Service</label>
+                <select
+                  value={designRequestService}
+                  onChange={(e) => setDesignRequestService(e.target.value)}
+                  required
+                  className="w-full bg-[#222] text-white border border-gray-700 rounded px-3 py-2 text-sm focus:border-green-400 focus:outline-none transition-colors"
+                >
+                  <option value="">Select a service...</option>
+                  {designServices.map((service) => (
+                    <option key={service} value={service}>{service}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm text-gray-300 mb-2">Request Details (Optional)</label>
+                <textarea
+                  value={designRequestDetails}
+                  onChange={(e) => setDesignRequestDetails(e.target.value)}
+                  rows={3}
+                  className="w-full bg-[#222] text-white border border-gray-700 rounded px-3 py-2 text-sm focus:border-green-400 focus:outline-none transition-colors resize-none"
+                  placeholder="Tell us more about what you're looking for..."
+                />
+              </div>
+              
+              {designRequestError && (
+                <div className="text-red-400 text-sm">{designRequestError}</div>
+              )}
+              
+              {designRequestStatus === 'success' && (
+                <div className="text-green-400 text-sm">Request submitted successfully! We'll be in touch soon.</div>
+              )}
+              
+              <button
+                type="submit"
+                disabled={designRequestStatus === 'submitting'}
+                className="flex items-center gap-2 px-6 py-2 text-black rounded-md transition-colors duration-300 text-sm font-light tracking-tight disabled:opacity-50"
+                style={{ 
+                  backgroundColor: buttonColor,
+                }}
+                onMouseOver={(e) => {
+                  if (designRequestStatus !== 'submitting') {
+                    e.currentTarget.style.backgroundColor = `${buttonColor}dd`;
+                  }
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = buttonColor;
+                }}
+              >
+                {designRequestStatus === 'submitting' ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-black border-t-transparent"></div>
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send size={16} />
+                    Submit Request
+                  </>
+                )}
+              </button>
+            </form>
           </div>
         </div>
         

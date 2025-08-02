@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
-import { Activity, Mail, Database, LogOut, Key, FileText, Sticker as Sticky, BarChart2, Briefcase, CreditCard, DollarSign, Bell, LucideIcon, Search } from 'lucide-react';
+import { Activity, Mail, Database, LogOut, Key, FileText, Sticker as Sticky, BarChart2, Briefcase, CreditCard, DollarSign, Bell, LucideIcon, Search, Palette } from 'lucide-react';
 import ApiKeyManager from './admin/ApiKeyManager';
 import APIDebugger from './admin/APIDebugger';
 
 import ContactSubmissionList from './admin/ContactSubmissionList';
+import DesignRequestList from './admin/DesignRequestList';
 import TodoList from './admin/TodoList';
 import NotesList from './admin/NotesList';
 import AnalyticsDashboard from './admin/AnalyticsDashboard';
@@ -54,6 +55,18 @@ export interface ContactSubmission {
   name: string;
   email: string;
   message: string;
+  timestamp: string;
+  status?: string;
+  responded_at?: string;
+  response_by?: string;
+  admin_notes?: string;
+}
+
+export interface DesignRequest {
+  id: string; // UUID
+  email: string;
+  service_type: string;
+  request_details?: string;
   timestamp: string;
   status?: string;
   responded_at?: string;
@@ -190,7 +203,7 @@ const AdminPage: React.FC = () => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // Data states
-  const [activeTab, setActiveTab] = useState<'analytics' | 'contacts' | 'supabase-status' | 'api-keys' | 'todos' | 'notes' | 'clients-jobs' | 'subscriptions' | 'financials' | 'coming-soon' | 'seo-audits' | 'seo-analyzer'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'contacts' | 'design-requests' | 'supabase-status' | 'api-keys' | 'todos' | 'notes' | 'clients-jobs' | 'subscriptions' | 'financials' | 'coming-soon' | 'seo-audits' | 'seo-analyzer'>('analytics');
   const [isAPIDebuggerOpen, setIsAPIDebuggerOpen] = useState(false);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
 
@@ -207,6 +220,7 @@ const AdminPage: React.FC = () => {
   const [clickEvents, setClickEvents] = useState<ClickEvent[]>([]);
   const [visitDurations, setVisitDurations] = useState<VisitDuration[]>([]);
   const [contactSubmissions, setContactSubmissions] = useState<ContactSubmission[]>([]);
+  const [designRequests, setDesignRequests] = useState<DesignRequest[]>([]);
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
@@ -348,6 +362,21 @@ const AdminPage: React.FC = () => {
         supabaseDetails.contactSubmissions = {
           count: contactsData.length,
           lastUpdated: contactsData[0]?.timestamp || 'N/A'
+        };
+      }
+
+      // Fetch design requests
+      const { data: designRequestsData, error: designRequestsError } = await supabaseClient
+        .from('design_requests')
+        .select('*')
+        .order('timestamp', { ascending: false });
+
+      if (designRequestsError) throw designRequestsError;
+      if (designRequestsData) {
+        setDesignRequests(designRequestsData as unknown as DesignRequest[]);
+        supabaseDetails.designRequests = {
+          count: designRequestsData.length,
+          lastUpdated: designRequestsData[0]?.timestamp || 'N/A'
         };
       }
 
@@ -872,6 +901,7 @@ const AdminPage: React.FC = () => {
               <TabButton tab="analytics" icon={BarChart2} label="Analytics" />
               <TabButton tab="clients-jobs" icon={Briefcase} label="Clients & Jobs" />
               <TabButton tab="contacts" icon={Mail} label="Contact Forms" />
+              <TabButton tab="design-requests" icon={Palette} label="Design Requests" />
               <TabButton tab="subscriptions" icon={CreditCard} label="Subscriptions" />
               <TabButton tab="financials" icon={DollarSign} label="Financials" />
               <TabButton tab="api-keys" icon={Key} label="API Keys" />
@@ -933,6 +963,13 @@ const AdminPage: React.FC = () => {
                   <div className="space-y-8">
                     <h2 className="text-2xl font-light tracking-tight">Contact Form Submissions</h2>
                     <ContactSubmissionList contactSubmissions={contactSubmissions} />
+                  </div>
+                )}
+
+                {activeTab === 'design-requests' && (
+                  <div className="space-y-8">
+                    <h2 className="text-2xl font-light tracking-tight">Design Requests</h2>
+                    <DesignRequestList designRequests={designRequests} />
                   </div>
                 )}
 
