@@ -205,8 +205,6 @@ const AdminPage: React.FC = () => {
   // Data states
   const [activeTab, setActiveTab] = useState<'analytics' | 'contacts' | 'design-requests' | 'supabase-status' | 'api-keys' | 'todos' | 'notes' | 'clients-jobs' | 'subscriptions' | 'financials' | 'coming-soon' | 'seo-audits' | 'seo-analyzer'>('analytics');
   const [isAPIDebuggerOpen, setIsAPIDebuggerOpen] = useState(false);
-  const [pageViews, setPageViews] = useState<PageView[]>([]);
-
   // Debug effect for API Debugger
   useEffect(() => {
     console.log('APIDebugger state changed:', isAPIDebuggerOpen);
@@ -217,8 +215,6 @@ const AdminPage: React.FC = () => {
     console.log('AdminPage mounted, isAuthenticated:', isAuthenticated);
     console.log('APIDebugger import check:', typeof APIDebugger);
   }, []);
-  const [clickEvents, setClickEvents] = useState<ClickEvent[]>([]);
-  const [visitDurations, setVisitDurations] = useState<VisitDuration[]>([]);
   const [contactSubmissions, setContactSubmissions] = useState<ContactSubmission[]>([]);
   const [designRequests, setDesignRequests] = useState<DesignRequest[]>([]);
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
@@ -333,9 +329,7 @@ const AdminPage: React.FC = () => {
           is_bounce: i % 4 === 0
         }));
         
-        setPageViews(mockPageViews as PageView[]);
-        setClickEvents(mockClickEvents as ClickEvent[]);
-        setVisitDurations(mockVisitDurations as VisitDuration[]);
+        // Mock analytics data - removed unused state variables
         
         supabaseDetails.analytics = {
           pageViews: mockPageViews.length,
@@ -795,7 +789,7 @@ const AdminPage: React.FC = () => {
           setCurrentUserId(null);
           setSupabaseAuthStatus('unauthenticated');
           setSupabaseAuthUser(null);
-          setPageViews([]);
+          // Removed unused pageViews state
           setContactSubmissions([]);
           setApiKeys([]);
           setTodos([]);
@@ -962,14 +956,14 @@ const AdminPage: React.FC = () => {
                 {activeTab === 'contacts' && (
                   <div className="space-y-8">
                     <h2 className="text-2xl font-light tracking-tight">Contact Form Submissions</h2>
-                    <ContactSubmissionList contactSubmissions={contactSubmissions} />
+                    <ContactSubmissionList contactSubmissions={contactSubmissions} setContactSubmissions={setContactSubmissions} />
                   </div>
                 )}
 
                 {activeTab === 'design-requests' && (
                   <div className="space-y-8">
                     <h2 className="text-2xl font-light tracking-tight">Design Requests</h2>
-                    <DesignRequestList designRequests={designRequests} />
+                    <DesignRequestList designRequests={designRequests} setDesignRequests={setDesignRequests} />
                   </div>
                 )}
 
