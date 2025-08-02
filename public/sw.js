@@ -6,7 +6,7 @@ const FONT_CACHE = 'font-v2';
 
 const urlsToCache = [
   '/',
-  '/flashforward.png',
+  '/favicon.ico',
   '/manifest.json',
   '/sounds/windows95-startup.mp3',
   '/sounds/windows95-error.mp3',
@@ -40,6 +40,14 @@ self.addEventListener('fetch', (event) => {
 
   // Skip non-GET requests
   if (request.method !== 'GET') {
+    return;
+  }
+
+  // Skip chrome-extension and other unsupported schemes
+  if (url.protocol === 'chrome-extension:' || 
+      url.protocol === 'chrome:' || 
+      url.protocol === 'moz-extension:' ||
+      url.protocol === 'safari-extension:') {
     return;
   }
 
@@ -91,19 +99,20 @@ self.addEventListener('fetch', (event) => {
 
 // Cache first strategy
 async function cacheFirst(request, cacheName) {
-  const cachedResponse = await caches.match(request);
-  if (cachedResponse) {
-    return cachedResponse;
-  }
-  
   try {
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
       const cache = await caches.open(cacheName);
-      cache.put(request, networkResponse.clone());
+      await cache.put(request, networkResponse.clone());
     }
     return networkResponse;
   } catch (error) {
+    console.warn('Cache first strategy failed:', error);
     return new Response('Network error', { status: 503 });
   }
 }
@@ -114,13 +123,18 @@ async function networkFirst(request, cacheName) {
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
       const cache = await caches.open(cacheName);
-      cache.put(request, networkResponse.clone());
+      await cache.put(request, networkResponse.clone());
     }
     return networkResponse;
   } catch (error) {
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) {
-      return cachedResponse;
+    console.warn('Network first strategy failed:', error);
+    try {
+      const cachedResponse = await caches.match(request);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+    } catch (cacheError) {
+      console.warn('Cache fallback failed:', cacheError);
     }
     return new Response('Network error', { status: 503 });
   }

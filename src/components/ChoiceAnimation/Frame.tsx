@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { Card, CardContent } from '../../components/ui/card';
 
 interface FrameProps {
@@ -30,15 +30,15 @@ export const Frame = memo(({ onYearSelect, onYearHover }: FrameProps): JSX.Eleme
     }
   };
 
-  const handlePowerClick = () => {
+  const handlePowerClick = useCallback(() => {
     setIsZoomed(!isZoomed);
     setIsTransitioning(true);
     setShowButtons(false);
-  };
+  }, [isZoomed]);
 
   if (isMobile) {
     // Mobile choice landing screen using uploaded image
-    const handleImageClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const handleImageClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
       const rect = event.currentTarget.getBoundingClientRect();
       const y = event.clientY - rect.top;
       
@@ -50,7 +50,7 @@ export const Frame = memo(({ onYearSelect, onYearHover }: FrameProps): JSX.Eleme
       else if (y >= 500 && y <= 700) {
         onYearSelect('2025');
       }
-    };
+    }, [onYearSelect]);
 
     return (
       <section className="w-screen h-screen flex flex-col justify-center items-center bg-black">
