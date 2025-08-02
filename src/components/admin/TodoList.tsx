@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Todo } from '../AdminPage'; // Assuming Todo interface is exported
 import { supabase } from '../../lib/supabase';
 
@@ -43,7 +43,7 @@ const TodoList: React.FC<TodoListProps> = ({ todos, setTodos, currentUserId }) =
     }
   };
 
-  const handleToggleTodo = async (id: string, currentStatus: boolean) => {
+  const handleToggleTodo = useCallback(async (id: string, currentStatus: boolean) => {
     try {
       const { error: updateError } = await supabase
         .from('todos')
@@ -58,9 +58,9 @@ const TodoList: React.FC<TodoListProps> = ({ todos, setTodos, currentUserId }) =
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update todo');
     }
-  };
+  }, [setTodos]);
 
-  const handleDeleteTodo = async (id: string) => {
+  const handleDeleteTodo = useCallback(async (id: string) => {
     try {
       const { error: deleteError } = await supabase
         .from('todos')
@@ -73,7 +73,7 @@ const TodoList: React.FC<TodoListProps> = ({ todos, setTodos, currentUserId }) =
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete todo');
     }
-  };
+  }, [setTodos]);
 
   return (
     <div className="space-y-4">

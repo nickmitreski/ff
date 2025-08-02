@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Note } from '../AdminPage'; // Assuming Note interface is exported
 import { supabase } from '../../lib/supabase';
 
@@ -73,7 +73,7 @@ const NotesList: React.FC<NotesListProps> = ({ notes, setNotes, currentUserId })
     }
   };
 
-  const handleDeleteNote = async (id: string) => {
+  const handleDeleteNote = useCallback(async (id: string) => {
     try {
       const { error: deleteError } = await supabase
         .from('notes')
@@ -89,7 +89,7 @@ const NotesList: React.FC<NotesListProps> = ({ notes, setNotes, currentUserId })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete note');
     }
-  };
+  }, [setNotes, editingNote]);
 
   return (
     <div className="space-y-4">
