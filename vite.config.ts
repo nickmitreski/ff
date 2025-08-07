@@ -12,7 +12,7 @@ export default defineConfig({
       'Referrer-Policy': 'strict-origin-when-cross-origin',
       'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
       'Cache-Control': 'public, max-age=31536000, immutable',
-      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://us.i.posthog.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://cur.cursors-4u.net; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://us.i.posthog.com https://file.garden https://cur.cursors-4u.net https://fonts.googleapis.com https://fonts.gstatic.com ws://localhost:* wss://localhost:* http://localhost:* https://localhost:*; frame-src 'self'; object-src 'none'; base-uri 'self';",
+      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://us.i.posthog.com https://us-assets.i.posthog.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://cur.cursors-4u.net; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com https://file.garden https://cur.cursors-4u.net https://fonts.googleapis.com https://fonts.gstatic.com ws://localhost:* wss://localhost:* http://localhost:* https://localhost:*; frame-src 'self'; object-src 'none'; base-uri 'self';",
     },
   },
   preview: {
