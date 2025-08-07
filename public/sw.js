@@ -1,92 +1,48 @@
-const CACHE_NAME = 'flash-forward-v3';
-const STATIC_CACHE = 'static-v3';
-const DYNAMIC_CACHE = 'dynamic-v3';
-const IMAGE_CACHE = 'image-v3';
-const FONT_CACHE = 'font-v3';
+// Service Worker for Flash Forward Digital
+const CACHE_NAME = 'ff-cache-v1';
+const STATIC_CACHE = 'ff-static-v1';
+const DYNAMIC_CACHE = 'ff-dynamic-v1';
+const IMAGE_CACHE = 'ff-images-v1';
+const FONT_CACHE = 'ff-fonts-v1';
 
-const urlsToCache = [
-  '/',
-  '/flashforward.png',
-  '/favicon.ico',
-  '/manifest.json',
-  '/sounds/windows95-startup.mp3',
-  '/sounds/windows95-error.mp3',
-  '/sounds/windows95-maximize.mp3',
-  '/sounds/windows95-minimize.mp3',
-];
-
-// Cache strategies with different lifetimes
-const cacheStrategies = {
-  static: 'cache-first', // 1 year
-  dynamic: 'network-first', // 1 hour
-  api: 'network-first', // 5 minutes
-  image: 'cache-first', // 1 month
-  font: 'cache-first', // 1 year
-};
-
-// Install event - cache resources
+// Install event - cache static assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(STATIC_CACHE)
-      .then((cache) => cache.addAll(urlsToCache))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll([
+        '/',
+        '/index.html',
+        '/manifest.json',
+        '/robots.txt',
+        '/sitemap.xml'
+      ]);
+    })
   );
 });
 
-// Fetch event - implement cache strategies with different lifetimes
+// Fetch event - handle requests
 self.addEventListener('fetch', (event) => {
-  const { request } = event;
+  const request = event.request;
   const url = new URL(request.url);
 
-  // Skip non-GET requests
+  // Handle different types of requests
   if (request.method !== 'GET') {
     return;
   }
 
-  // Skip chrome-extension and other unsupported schemes
-  if (url.protocol === 'chrome-extension:' || 
-      url.protocol === 'chrome:' || 
-      url.protocol === 'moz-extension:' ||
-      url.protocol === 'safari-extension:') {
-    return;
-  }
-
-  // Images - long cache (1 month)
-  if (url.pathname.includes('.png') || 
-      url.pathname.includes('.jpg') || 
-      url.pathname.includes('.jpeg') || 
-      url.pathname.includes('.gif') || 
-      url.pathname.includes('.webp') ||
-      url.pathname.includes('.svg')) {
+  // Images - cache first
+  if (request.destination === 'image') {
     event.respondWith(cacheFirst(request, IMAGE_CACHE));
     return;
   }
 
-  // Fonts - very long cache (1 year)
-  if (url.pathname.includes('.woff') || 
-      url.pathname.includes('.woff2') || 
-      url.pathname.includes('.ttf') || 
-      url.pathname.includes('.eot')) {
+  // Fonts - cache first
+  if (request.destination === 'font') {
     event.respondWith(cacheFirst(request, FONT_CACHE));
     return;
   }
 
-  // Static assets - long cache (1 year)
-  if (url.pathname.startsWith('/static/') || 
-      url.pathname.includes('.mp3') ||
-      url.pathname.includes('.wav') ||
-      url.pathname.includes('.css') ||
-      url.pathname.includes('.js')) {
-    event.respondWith(cacheFirst(request, STATIC_CACHE));
-    return;
-  }
-
-  // API calls - short cache (5 minutes)
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(networkFirst(request, DYNAMIC_CACHE));
-    return;
-  }
-
-  // HTML pages - medium cache (1 hour)
+  // HTML pages - network first
   if (request.headers.get('accept') && request.headers.get('accept').includes('text/html')) {
     event.respondWith(networkFirst(request, DYNAMIC_CACHE));
     return;
@@ -114,7 +70,9 @@ async function cacheFirst(request, cacheName) {
         !url.hostname.includes('fonts.gstatic.com') &&
         !url.hostname.includes('cur.cursors-4u.net') &&
         !url.hostname.includes('us.i.posthog.com') &&
-        !url.hostname.includes('file.garden')) {
+        !url.hostname.includes('us-assets.i.posthog.com') &&
+        !url.hostname.includes('file.garden') &&
+        !url.hostname.includes('ff-eight-gamma.vercel.app')) {
       console.warn('Skipping external resource:', url.href);
       return new Response('External resource blocked', { status: 403 });
     }
@@ -144,7 +102,9 @@ async function networkFirst(request, cacheName) {
         !url.hostname.includes('fonts.gstatic.com') &&
         !url.hostname.includes('cur.cursors-4u.net') &&
         !url.hostname.includes('us.i.posthog.com') &&
-        !url.hostname.includes('file.garden')) {
+        !url.hostname.includes('us-assets.i.posthog.com') &&
+        !url.hostname.includes('file.garden') &&
+        !url.hostname.includes('ff-eight-gamma.vercel.app')) {
       console.warn('Skipping external resource:', url.href);
       return new Response('External resource blocked', { status: 403 });
     }
