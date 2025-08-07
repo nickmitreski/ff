@@ -1,0 +1,7 @@
+node_modules
+ressources
+.favorites.json
+
+/built
+/coverage
+.babelrc

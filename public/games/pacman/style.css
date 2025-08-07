@@ -1,0 +1,191 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+  background-color: #000;
+  font-family: sans-serif;
+}
+
+#game-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* UI Panel styling */
+#ui-panel {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  display: flex; /* To align buttons horizontally */
+}
+
+#ui-panel button {
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-right: 5px;
+  display: flex; /* For icon and text alignment */
+  align-items: center; /* Vertically align icon and text */
+  justify-content: center; /* Center content horizontally if needed */
+}
+
+#ui-panel button svg {
+  margin-right: 0px; /* Adjust spacing between icon and text */
+}
+
+/* Modal styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  text-align: center;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
+}
+
+.modal-buttons {
+  margin-top: 15px;
+}
+
+.modal-buttons button {
+  margin: 0 5px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.share-link {
+  margin-top: 10px;
+  font-size: 12px;
+  word-break: break-all;
+}
+
+/* Level Editor Grid */
+#grid-container {
+  display: grid;
+  grid-gap: 4px;
+  justify-content: center;
+  margin-top: 15px;
+  max-height: 60vh;
+  overflow: auto;
+  padding: 10px;
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.cell.wall {
+  background-color: #0000ff;
+}
+
+.cell.pellet {
+  background-color: #ffcc00;
+}
+
+.cell.power-pellet {
+  background-color: #ff00ff;
+  border-radius: 50%;
+}
+
+.cell.ghost {
+  background-color: #ff0000; /* Ghost cell color */
+}
+
+.cell.one-way-wall {
+  background-color: pink; /* Pink color for one-way walls */
+}
+
+/* Style for 3D one-way walls */
+.one-way-wall-material {
+  color: pink; /* Pink color for one-way walls in 3D */
+}
+
+/* Shared Levels List Items */
+.level-item {
+  padding: 8px;
+  margin: 4px;
+  background-color: #eee;
+  cursor: pointer;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.level-item:hover {
+  background-color: #ccc;
+}
+
+/* Editor Mode Buttons */
+.editor-modes {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.editor-mode-btn {
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  margin: 0 5px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+}
+
+.editor-mode-btn.active {
+  background-color: #bbb;
+}
+
+/* Settings Menu Styles */
+.settings-options {
+  padding: 10px 0;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.setting-item label {
+  margin-right: 10px;
+}
+
+/* Context Menu Styles */
+.context-menu {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    z-index: 1200; /* Ensure it's above other elements */
+}
+
+.context-menu-option {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.context-menu-option:hover {
+    background-color: #eee;
+}

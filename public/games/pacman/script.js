@@ -1,0 +1,1365 @@
+// script.js
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.module.js";
+
+// Global Variables & Settings
+const cellSize = 10;
+const wallHeight = 10;
+
+let maze = [
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 2, 1, 1, 2, 1, 1, 2, 2, 1],
+  [1, 2, 1, 1, 2, 1, 1, 2, 2, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+  [1, 2, 1, 1, 2, 1, 1, 2, 2, 1],
+  [1, 2, 2, 2, 2, 2, 2, 2, 3, 1], // Power pellet at bottom right
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+];
+
+// Override maze if level parameter is provided in URL
+const params = new URLSearchParams(window.location.search);
+if (params.has("level")) {
+  try {
+    const levelData = params.get("level");
+    const parsedMaze = JSON.parse(atob(levelData));
+    if (Array.isArray(parsedMaze) && parsedMaze.length > 0) {
+      maze = parsedMaze;
+    }
+  } catch (e) {
+    console.error("Error parsing level data:", e);
+  }
+}
+
+const isCustomLevel = params.has("level");
+const isInfiniteMode = !isCustomLevel;
+
+let mazeRows = maze.length;
+let mazeCols = maze[0].length;
+let offsetX = -(mazeCols * cellSize) / 2 + cellSize / 2;
+let offsetZ = -(mazeRows * cellSize) / 2 + cellSize / 2;
+
+let scene, camera, renderer, clock;
+let mazeGroup, pelletGroup;
+let pacman; // game objects
+let ghosts = []; // Array to hold multiple ghosts
+let deathSound;
+let powerPelletSound; // New variable for power pellet audio
+
+let levelCompleted = false;
+let isEditorOpen = false;
+let paused = false;
+let editorMode = 'wall'; // 'wall', 'pellet', 'power-pellet', 'ghost', or 'eraser'
+let isDrawing = false;
+
+// Shared levels array (simulated for now)
+let sharedLevels = [];
+let userBeatenLevels = [];
+
+// Settings
+let noResetMode = false; // Default no-reset mode is off
+let isFullscreen = false;
+
+// Audio
+let pelletSound;
+
+// New global for ghost context menu target
+let ghostContextTarget = null;
+
+// Initialize the scene and game
+init();
+animate();
+
+///////////////////////////////////
+// Initialization
+function init() {
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x000000);
+
+  camera = new THREE.PerspectiveCamera(
+    60,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
+  camera.position.set(0, 50, 50);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.getElementById("game-container").appendChild(renderer.domElement);
+
+  clock = new THREE.Clock();
+
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(ambientLight);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  directionalLight.position.set(20, 50, 10);
+  scene.add(directionalLight);
+
+  createMaze();
+
+  pelletGroup = new THREE.Group();
+  createPellets();
+  scene.add(pelletGroup);
+
+  pacman = createPacman(1, 1);
+  scene.add(pacman.mesh);
+
+  createGhosts(); // Create ghosts based on maze data
+
+  window.addEventListener("keydown", handleKeyDown);
+  window.addEventListener("resize", onWindowResize);
+  window.addEventListener('fullscreenchange', handleFullscreenChange);
+  window.addEventListener('webkitfullscreenchange', handleFullscreenChange); // Safari
+
+  const editLevelBtn = document.getElementById("edit-level-btn");
+  if (editLevelBtn) {
+    editLevelBtn.addEventListener("click", showLevelEditor);
+  }
+  document.getElementById("cancel-editor-btn").addEventListener("click", hideLevelEditor);
+  document.getElementById("save-level-btn").addEventListener("click", handleSaveLevel);
+  document.getElementById("share-level-editor-btn").addEventListener("click", () => {
+    document.getElementById("share-link-editor").style.display = "none";
+    document.getElementById("share-level-editor-named").style.display = "block";
+  });
+  document.getElementById("confirm-share-editor-btn").addEventListener("click", handleShareLevelEditor);
+  document.getElementById("play-again-btn").addEventListener("click", () => {
+    if (isInfiniteMode) {
+      nextLevel();
+    } else {
+      window.location.reload();
+    }
+  });
+  document.getElementById("share-level-btn").addEventListener("click", () => {
+    document.getElementById("share-link").style.display = "none";
+    document.getElementById("share-level-complete-named").style.display = "block";
+  });
+  document.getElementById("confirm-share-complete-btn").addEventListener("click", handleShareLevelComplete);
+  document.getElementById("view-levels-btn").addEventListener("click", showViewLevelsModal);
+  document.getElementById("close-levels-btn").addEventListener("click", hideViewLevelsModal);
+  document.getElementById("pause-btn").addEventListener("click", showPauseMenu);
+  document.getElementById("resume-btn").addEventListener("click", hidePauseMenu);
+  document.getElementById("restart-pause-btn").addEventListener("click", () => { window.location.reload(); });
+  document.getElementById("quit-pause-btn").addEventListener("click", () => { window.location.href = window.location.pathname; });
+  document.getElementById("restart-death-btn").addEventListener("click", () => { window.location.reload(); });
+  document.getElementById("goback-death-btn").addEventListener("click", () => { window.location.href = window.location.pathname; });
+
+  document.getElementById("back-to-levels-btn").addEventListener("click", () => {
+    document.getElementById("level-complete").style.display = "none";
+    showViewLevelsModal();
+  });
+
+  // Level Tabs in View Levels Modal
+  document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', function (event) {
+      const tabName = this.getAttribute('data-tab');
+      openLevelTab(tabName);
+    });
+  });
+
+  // Editor mode buttons
+  document.getElementById('wall-mode-btn').addEventListener('click', () => setEditorMode('wall'));
+  document.getElementById('pellet-mode-btn').addEventListener('click', () => setEditorMode('pellet'));
+  document.getElementById('power-pellet-mode-btn').addEventListener('click', () => setEditorMode('power-pellet')); // New button
+  document.getElementById('ghost-mode-btn').addEventListener('click', () => setEditorMode('ghost')); // New ghost button
+  document.getElementById('eraser-mode-btn').addEventListener('click', () => setEditorMode('eraser')); // New eraser button
+  document.getElementById('line-mode-btn').addEventListener('click', () => setEditorMode('line'));
+  document.getElementById('play-level-btn').addEventListener('click', playEditedLevel);
+
+  // Settings button and modal
+  document.getElementById("settings-btn").addEventListener("click", showSettingsMenu);
+  document.getElementById("close-settings-btn").addEventListener("click", hideSettingsMenu);
+  document.getElementById("connect-controller-btn").addEventListener("click", connectController);
+
+  // Initialize settings from local storage or defaults
+  loadSettings();
+
+  // Audio setup
+  const audioLoader = new THREE.AudioLoader();
+  const listener = new THREE.AudioListener();
+  camera.add(listener);
+
+  pelletSound = new THREE.Audio(listener);
+  audioLoader.load('/pacman_chomp.wav', (buffer) => {
+    pelletSound.setBuffer(buffer);
+    pelletSound.setVolume(0.5); // Adjust volume if needed
+  });
+
+  deathSound = new THREE.Audio(listener);
+  audioLoader.load('/pacman_death.wav', (buffer) => {
+    deathSound.setBuffer(buffer);
+    deathSound.setVolume(0.5);
+  });
+  
+  // Load power pellet sound
+  powerPelletSound = new THREE.Audio(listener);
+  audioLoader.load('/pac-man-power-pellet.mp3', (buffer) => {
+    powerPelletSound.setBuffer(buffer);
+    powerPelletSound.setVolume(0.5);
+  });
+  
+  // Rest of the initialization remains the same
+  document.getElementById("resize-maze-btn").addEventListener("click", handleResizeMaze);
+
+  //Clear button
+  document.getElementById("clear-maze-btn").addEventListener("click", handleClearMaze);
+
+  // Ghost context menu event handlers
+  document.getElementById('delete-ghost').addEventListener('click', handleDeleteGhost);
+  document.getElementById('change-ghost-color').addEventListener('click', handleChangeGhostColor);
+}
+
+async function connectController() {
+  if (!navigator.bluetooth) {
+    alert("Web Bluetooth API is not available in this browser.");
+    return;
+  }
+  try {
+    // Request any Bluetooth device. You can refine the filters as needed.
+    const device = await navigator.bluetooth.requestDevice({
+      acceptAllDevices: true,
+      optionalServices: ['battery_service'] // Common service used on many devices
+    });
+    const server = await device.gatt.connect();
+    console.log("Bluetooth Controller connected:", device);
+    // TODO: Add further logic here to map controller input to game actions.
+  } catch (error) {
+    console.error("Bluetooth Controller connection failed:", error);
+  }
+}
+
+function setEditorMode(mode) {
+  editorMode = mode;
+  document.getElementById('wall-mode-btn').classList.remove('active');
+  document.getElementById('pellet-mode-btn').classList.remove('active');
+  document.getElementById('power-pellet-mode-btn').classList.remove('active'); // Update button list
+  document.getElementById('ghost-mode-btn').classList.remove('active'); // New ghost button
+  document.getElementById('eraser-mode-btn').classList.remove('active'); // New eraser button
+  document.getElementById('line-mode-btn').classList.remove('active');
+  document.getElementById(`${mode}-mode-btn`).classList.add('active');
+}
+
+///////////////////////////////////
+// Pause and Resume Functions
+function pauseGame() {
+  paused = true;
+}
+
+function resumeGame() {
+  paused = false;
+}
+
+function showPauseMenu() {
+  pauseGame();
+  document.getElementById("pause-menu").style.display = "flex";
+}
+
+function hidePauseMenu() {
+  document.getElementById("pause-menu").style.display = "none";
+  resumeGame();
+}
+
+///////////////////////////////////
+// Settings Menu Functions
+function showSettingsMenu() {
+  pauseGame(); // Pause game when settings is opened
+  document.getElementById("settings-menu").style.display = "flex";
+  // Load settings into the modal when it's opened
+  document.getElementById("no-reset-checkbox").checked = noResetMode;
+  document.getElementById("fullscreen-checkbox").checked = isFullscreen;
+}
+
+function hideSettingsMenu() {
+  document.getElementById("settings-menu").style.display = "none";
+  resumeGame(); // Resume game when settings is closed
+  // Save settings when the modal is closed
+  noResetMode = document.getElementById("no-reset-checkbox").checked;
+  isFullscreen = document.getElementById("fullscreen-checkbox").checked;
+  applyFullscreenSetting(); // Apply fullscreen setting on close
+  saveSettings();
+}
+
+// Handle fullscreen change event
+function handleFullscreenChange() {
+  const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+  if (!fullscreenElement && isFullscreen) {
+    applyFullscreenSetting();
+  }
+}
+
+// Function to apply fullscreen setting
+function applyFullscreenSetting() {
+  const fullScreenElem = document.documentElement;
+  if (isFullscreen) {
+    if (document.fullscreenEnabled) {
+      if (fullScreenElem.requestFullscreen) {
+        fullScreenElem.requestFullscreen();
+      } else if (fullScreenElem.webkitRequestFullscreen) { /* Safari */
+        fullScreenElem.webkitRequestFullscreen();
+      } else if (fullScreenElem.msRequestFullscreen) { /* IE11 */
+        fullScreenElem.msRequestFullscreen();
+      }
+    }
+  } else {
+    if (document.fullscreenEnabled) { // Check if fullscreen is enabled before trying to exit
+      try {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */ // Safari, Chrome & Opera.
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE11 */
+          document.msExitFullscreen();
+        }
+      } catch (error) {
+        console.error("Error exiting fullscreen:", error);
+      }
+    } else {
+      setTimeout(() => { // Delay to allow document to become active
+        console.warn("Fullscreen not enabled, cannot exit fullscreen.");
+      }, 0);
+    }
+  }
+}
+
+// Load settings from local storage
+function loadSettings() {
+  const settings = JSON.parse(localStorage.getItem('gameSettings')) || {};
+  noResetMode = settings.noResetMode !== undefined ? settings.noResetMode : false;
+  isFullscreen = settings.isFullscreen !== undefined ? settings.isFullscreen : true;
+  document.getElementById("no-reset-checkbox").checked = noResetMode; // Ensure checkbox reflects loaded setting
+  document.getElementById("fullscreen-checkbox").checked = isFullscreen;
+  applyFullscreenSetting();
+}
+
+// Save settings to local storage
+function saveSettings() {
+  const settings = {
+    noResetMode: noResetMode,
+    isFullscreen: isFullscreen,
+  };
+  localStorage.setItem('gameSettings', JSON.stringify(settings));
+}
+
+///////////////////////////////////
+// Maze Creation
+function createMaze() {
+  mazeGroup = new THREE.Group();
+
+  const wallGeometry = new THREE.BoxGeometry(cellSize, wallHeight, cellSize);
+  const wallMaterial = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+
+  for (let row = 0; row < mazeRows; row++) {
+    for (let col = 0; col < mazeCols; col++) {
+      if (maze[row][col] === 1) {
+        const wallMesh = new THREE.Mesh(wallGeometry, wallMaterial);
+        const pos = gridToWorld(row, col, wallHeight / 2);
+        wallMesh.position.copy(pos);
+        mazeGroup.add(wallMesh);
+      }
+    }
+  }
+  scene.add(mazeGroup);
+
+  const floorGeometry = new THREE.PlaneGeometry(mazeCols * cellSize, mazeRows * cellSize);
+  const floorMaterial = new THREE.MeshLambertMaterial({ color: 0x222222 });
+  const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
+  floorMesh.rotation.x = -Math.PI / 2;
+  floorMesh.position.y = 0;
+  scene.add(floorMesh);
+}
+
+///////////////////////////////////
+// Pellet Creation
+function createPellets() {
+  pelletGroup.clear(); // Clear existing pellets
+  const pelletGeometry = new THREE.SphereGeometry(1, 16, 16);
+  const pelletMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
+  const powerPelletGeometry = new THREE.SphereGeometry(2, 16, 16); // Larger for power pellets
+  const powerPelletMaterial = new THREE.MeshLambertMaterial({ color: 0xffff00 }); // Yellow for power pellets
+
+  for (let row = 0; row < mazeRows; row++) {
+    for (let col = 0; col < mazeCols; col++) {
+      let pelletMesh;
+      if (maze[row][col] === 2) {
+        pelletMesh = new THREE.Mesh(pelletGeometry, pelletMaterial);
+      } else if (maze[row][col] === 3) {
+        pelletMesh = new THREE.Mesh(powerPelletGeometry, powerPelletMaterial); // Use power pellet geometry and material
+      }
+
+      if (pelletMesh) {
+        const pos = gridToWorld(row, col, 1);
+        pelletMesh.position.copy(pos);
+        pelletGroup.add(pelletMesh);
+      }
+    }
+  }
+}
+
+///////////////////////////////////
+// Pac-Man Creation & Geometry
+function createPacmanGeometry(mouthAngle) {
+  const radius = 4;
+  const shape = new THREE.Shape();
+  shape.moveTo(0, 0);
+  shape.absarc(0, 0, radius, mouthAngle / 2, Math.PI * 2 - mouthAngle / 2, false);
+  shape.lineTo(0, 0);
+  const extrudeSettings = { depth: 2, bevelEnabled: false, steps: 1 };
+  const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+  geometry.center();
+  geometry.rotateX(-Math.PI / 2);
+  return geometry;
+}
+
+function createPacman(startRow, startCol) {
+  const initialMouth = 0.1;
+  const geometry = createPacmanGeometry(initialMouth);
+  const material = new THREE.MeshLambertMaterial({ color: 0xffff00 });
+  const mesh = new THREE.Mesh(geometry, material);
+  const pos = gridToWorld(startRow, startCol, 1);
+  mesh.position.copy(pos);
+
+  return {
+    mesh: mesh,
+    gridPos: { row: startRow, col: startCol },
+    targetPos: { row: startRow, col: startCol + 1 },
+    moving: true,
+    direction: { row: 0, col: 1 },
+    nextDirection: { row: 0, col: 0 },
+    mouthTimer: 0,
+    mouthUpdateInterval: 0.1,
+    minMouthAngle: 0.1,
+    maxMouthAngle: 0.6,
+    speed: cellSize,
+    isPoweredUp: false, // Add power-up state
+    powerUpTimer: 0,    // Timer for power-up duration
+    powerUpDuration: 7  // Seconds of power-up
+  };
+}
+
+///////////////////////////////////
+// Ghost Creation & Appearance
+function createGhostGeometry() {
+  const ghostWidth = 8;
+  const ghostHeight = 10;
+  const shape = new THREE.Shape();
+  shape.moveTo(-ghostWidth / 2, -ghostHeight / 2);
+  const bumps = 4;
+  const bumpWidth = ghostWidth / bumps;
+  for (let i = 0; i < bumps; i++) {
+    const startX = -ghostWidth / 2 + i * bumpWidth;
+    const midX = startX + bumpWidth / 2;
+    const endX = startX + bumpWidth;
+    shape.quadraticCurveTo(midX, -ghostHeight / 2 - 2, endX, -ghostHeight / 2);
+  }
+  shape.lineTo(ghostWidth / 2, ghostHeight / 2);
+  shape.absarc(0, ghostHeight / 2, ghostWidth / 2, 0, Math.PI, false);
+  shape.lineTo(-ghostWidth / 2, -ghostHeight / 2);
+
+  const extrudeSettings = {
+    depth: 4,
+    bevelEnabled: true,
+    bevelThickness: 0.5,
+    bevelSize: 0.5,
+    bevelSegments: 2,
+    steps: 1,
+    curveSegments: 20
+  };
+
+  let geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+  geometry.center();
+  geometry.rotateX(-Math.PI / 2);
+  return geometry;
+}
+
+function createGhost(startRow, startCol) {
+  const geometry = createGhostGeometry();
+  const material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.scale.set(0.5, 0.5, 0.5);
+  mesh.position.copy(gridToWorld(startRow, startCol, 1));
+
+  const eyeGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+  const eyeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
+  const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+  const rightEye = leftEye.clone();
+
+  leftEye.position.set(-1, 4, -2);
+  rightEye.position.set(1, 4, -2);
+  mesh.add(leftEye);
+  mesh.add(rightEye);
+
+  const pupilGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+  const pupilMaterial = new THREE.MeshLambertMaterial({ color: 0x000000 });
+  const leftPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+  const rightPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+  leftPupil.position.set(0, 0, -0.4);
+  rightPupil.position.set(0, 0, -0.4);
+  leftEye.add(leftPupil);
+  rightEye.add(rightPupil);
+
+  return {
+    mesh: mesh,
+    gridPos: { row: !startRow, col: startCol },
+    targetPos: { row: startRow, col: startCol },
+    moving: false,
+    direction: { row: 0, col: 0 },
+    speed: cellSize
+  };
+}
+
+function createGhosts() {
+  ghosts = []; // Clear existing ghosts
+  for (let row = 0; row < mazeRows; row++) {
+    for (let col = 0; col < mazeCols; col++) {
+      if (maze[row][col] === 4) { // If cell is marked as ghost (4)
+        const newGhost = createGhost(row, col); // Create a ghost at that position
+        ghosts.push(newGhost); // Add to the ghosts array
+        scene.add(newGhost.mesh); // Add ghost mesh to the scene
+      }
+    }
+  }
+}
+
+///////////////////////////////////
+// Coordinate & Movement Helpers
+function gridToWorld(row, col, y = 1) {
+  const x = col * cellSize + offsetX;
+  const z = row * cellSize + offsetZ;
+  return new THREE.Vector3(x, y, z);
+}
+
+function canMove(row, col, fromRow = null, fromCol = null, entityType = 'pacman') {
+  if (row < 0 || row >= mazeRows || col < 0 || col >= mazeCols) {
+    return false;
+  }
+
+  const cellType = maze[row][col];
+
+  // Walls block both Pac-Man and Ghosts
+  if (cellType === 1) {
+    return false;
+  }
+
+  // Allow movement into empty spaces, pellets, and power pellets for both
+  if (cellType === 0 || cellType === 2 || cellType === 3 || cellType === 4) { // Include ghost start (4) as movable
+    return true;
+  }
+
+  return false; // By default, can't move into this cell
+}
+
+function handleKeyDown(e) {
+  if (e.key === "ArrowUp") {
+    pacman.nextDirection = { row: -1, col: 0 };
+  } else if (e.key === "ArrowDown") {
+    pacman.nextDirection = { row: 1, col: 0 };
+  } else if (e.key === "ArrowLeft") {
+    pacman.nextDirection = { row: 0, col: -1 };
+  } else if (e.key === "ArrowRight") {
+    pacman.nextDirection = { row: 0, col: 1 };
+  }
+}
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+///////////////////////////////////
+// Game Update Functions
+
+function updatePacman(dt) {
+  if (!pacman.moving) {
+    const queuedDir = pacman.nextDirection;
+    if ((queuedDir.row !== 0 || queuedDir.col !== 0) &&
+      canMove(pacman.gridPos.row + queuedDir.row, pacman.gridPos.col + queuedDir.col, pacman.gridPos.row, pacman.gridPos.col)) {
+      pacman.direction = { ...queuedDir };
+      pacman.nextDirection = { row: 0, col: 0 };
+    }
+    const newRow = pacman.gridPos.row + pacman.direction.row;
+    const newCol = pacman.gridPos.col + pacman.direction.col;
+    if (canMove(newRow, newCol, pacman.gridPos.row, pacman.gridPos.col)) {
+      pacman.targetPos = { row: newRow, col: newCol };
+      pacman.moving = true;
+    }
+  }
+
+  if (pacman.moving) {
+    const currentPos = pacman.mesh.position;
+    const targetWorld = gridToWorld(pacman.targetPos.row, pacman.targetPos.col, 1);
+    const dirVec = new THREE.Vector3().subVectors(targetWorld, currentPos);
+    const distance = dirVec.length();
+    const moveDist = pacman.speed * dt;
+    if (moveDist >= distance) {
+      pacman.mesh.position.copy(targetWorld);
+      pacman.gridPos = { ...pacman.targetPos };
+      pacman.moving = false;
+    } else {
+      dirVec.normalize();
+      pacman.mesh.position.addScaledVector(dirVec, moveDist);
+    }
+  }
+
+  pacman.mouthTimer += dt;
+  if (pacman.mouthTimer > pacman.mouthUpdateInterval) {
+    pacman.mouthTimer = 0;
+    const t = clock.getElapsedTime();
+    const mouthAngle = pacman.minMouthAngle +
+      (pacman.maxMouthAngle - pacman.minMouthAngle) * Math.abs(Math.sin(t * Math.PI * 2));
+    const newGeometry = createPacmanGeometry(mouthAngle);
+    pacman.mesh.geometry.dispose();
+    pacman.mesh.geometry = newGeometry;
+  }
+
+  if (pacman.direction.row !== 0 || pacman.direction.col !== 0) {
+    const angle = Math.atan2(pacman.direction.row, pacman.direction.col);
+    pacman.mesh.rotation.y = -angle;
+  }
+
+  if (pacman.isPoweredUp) {
+    pacman.powerUpTimer += dt;
+    if (pacman.powerUpTimer >= pacman.powerUpDuration) {
+      pacman.isPoweredUp = false;
+      ghosts.forEach(ghost => ghost.mesh.material.color.set(0xff0000)); // Revert ghost color
+      pacman.powerUpTimer = 0;
+    }
+  }
+}
+
+function updateGhost(dt, ghostObj) { // Pass individual ghost object
+  if (!ghostObj.moving) {
+    const directions = [
+      { row: -1, col: 0 },
+      { row: 1, col: 0 },
+      { row: 0, col: -1 },
+      { row: 0, col: 1 }
+    ];
+    let bestDir = null;
+    let bestDistance = Infinity;
+    let goodDirections = []; // Array to hold directions with 'good' distances
+
+    for (const d of directions) {
+      const newRow = ghostObj.gridPos.row + d.row;
+      const newCol = ghostObj.gridPos.col + d.col;
+      if (canMove(newRow, newCol, ghostObj.gridPos.row, ghostObj.gridPos.col, 'ghost')) { // Pass 'ghost' entity type
+        const dx = pacman.gridPos.col - newCol;
+        const dy = pacman.gridPos.row - newRow;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          goodDirections = [d]; // Start with a new best direction
+        } else if (distance === bestDistance) {
+          goodDirections.push(d); // Add directions with equally good distances
+        }
+      }
+    }
+
+    if (goodDirections.length > 0) {
+      // Choose a direction randomly from the 'good' directions
+      bestDir = goodDirections[Math.floor(Math.random() * goodDirections.length)];
+      ghostObj.direction = bestDir;
+      ghostObj.targetPos = {
+        row: ghostObj.gridPos.row + bestDir.row,
+        col: ghostObj.gridPos.col + bestDir.col
+      };
+      ghostObj.moving = true;
+    }
+  }
+
+  if (ghostObj.moving) {
+    const currentPos = ghostObj.mesh.position;
+    const targetWorld = gridToWorld(ghostObj.targetPos.row, ghostObj.targetPos.col, 1);
+    const dirVec = new THREE.Vector3().subVectors(targetWorld, currentPos);
+    const distance = dirVec.length();
+    const moveDist = ghostObj.speed * dt;
+    if (moveDist >= distance) {
+      ghostObj.mesh.position.copy(targetWorld);
+      ghostObj.gridPos = { ...ghostObj.targetPos };
+      ghostObj.moving = false;
+    } else {
+      dirVec.normalize();
+      ghostObj.mesh.position.addScaledVector(dirVec, moveDist);
+    }
+  }
+
+  if (ghostObj.direction.row !== 0 || ghostObj.direction.col !== 0) {
+    const ghostAngle = Math.atan2(ghostObj.direction.row, ghostObj.direction.col);
+    ghostObj.mesh.rotation.y = -ghostAngle;
+    if (ghostObj.direction.col < 0) {
+      ghostObj.mesh.scale.x = -Math.abs(ghostObj.mesh.scale.x);
+    } else {
+      ghostObj.mesh.scale.x = Math.abs(ghostObj.mesh.scale.x);
+    }
+  }
+
+  if (pacman.isPoweredUp) {
+    ghostObj.mesh.material.color.set(0x00008b); // Blue color when vulnerable
+    ghostObj.speed = cellSize * 0.75; // Ghost moves slightly slower when vulnerable (optional)
+  } else {
+    ghostObj.mesh.material.color.set(0xff0000); // Red color normal
+    ghostObj.speed = cellSize; // Normal speed
+  }
+}
+
+function updateCamera() {
+  const desiredPos = pacman.mesh.position.clone().add(new THREE.Vector3(0, 40, 40));
+  camera.lookAt(pacman.mesh.position);
+  camera.position.lerp(desiredPos, 0.1);
+}
+
+function checkPelletCollisions() {
+  for (let i = pelletGroup.children.length - 1; i >= 0; i--) {
+    const pellet = pelletGroup.children[i];
+    if (pellet.position.distanceTo(pacman.mesh.position) < 3) {
+      pelletGroup.remove(pellet);
+      const gridPos = worldToGrid(pellet.position);
+      if (maze[gridPos.row][gridPos.col] === 3) { // Power pellet detected (yellow and big)
+        if (powerPelletSound && powerPelletSound.isPlaying) {
+          powerPelletSound.stop();
+        }
+        if (powerPelletSound) powerPelletSound.play();
+        pacman.isPoweredUp = true;
+        pacman.powerUpTimer = 0; // Reset power-up timer
+      } else {
+        if (pelletSound.isPlaying) {
+          pelletSound.stop();
+        }
+        pelletSound.play(); // Play normal chomp sound for regular pellet
+      }
+      maze[gridPos.row][gridPos.col] = 0; // Clear the cell in maze
+    }
+  }
+}
+
+function worldToGrid(worldPos) {
+  const col = Math.round((worldPos.x - offsetX) / cellSize);
+  const row = Math.round((worldPos.z - offsetZ) / cellSize);
+  return { row: row, col: col };
+}
+
+function checkGhostCollision() {
+  for (let i = 0; i < ghosts.length; i++) { // Loop through all ghosts
+    const ghostObj = ghosts[i];
+    if (ghostObj.mesh.position.distanceTo(pacman.mesh.position) < 3) {
+      if (pacman.isPoweredUp) {
+        // "Eat" the ghost - reset its position
+        ghostObj.gridPos = { row: 1, col: mazeCols - 2 }; // Reset to a default position
+        ghostObj.mesh.position.copy(gridToWorld(1, mazeCols - 2, 1));
+        ghostObj.moving = false;
+        pacman.isPoweredUp = false; // Power-up effect ends after eating ghost
+        ghostObj.mesh.material.color.set(0xff0000); // Revert ghost color immediately after eating
+        pacman.powerUpTimer = 0; // Reset timer just in case
+      }
+      else {
+        // Play Pac-Man death sound when he dies
+        if (deathSound.isPlaying) {
+          deathSound.stop();
+        }
+        deathSound.play();
+        if (isCustomLevel || noResetMode) { // Check noResetMode for preset levels
+          pauseGame();
+          document.getElementById("death-screen").style.display = "flex";
+        } else {
+          window.location.reload();
+        }
+      }
+    }
+  }
+}
+
+function checkLevelCompletion() {
+  if (!levelCompleted && pelletGroup.children.length === 0) {
+    levelCompleted = true;
+    pauseGame();
+    if (isInfiniteMode) {
+      showWinScreen();
+    } else {
+      showLevelCompleteModal();
+    }
+  }
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  if (!paused) {
+    const dt = clock.getDelta();
+    updatePacman(dt);
+    for (let i = 0; i < ghosts.length; i++) { // Update each ghost
+      updateGhost(dt, ghosts[i]);
+    }
+    checkPelletCollisions();
+    checkGhostCollision();
+    checkLevelCompletion();
+    updateCamera();
+  }
+  renderer.render(scene, camera);
+}
+
+///////////////////////////////////
+// Level Editor & Sharing Functions
+function showLevelEditor() {
+  isEditorOpen = true;
+  pauseGame();
+  document.getElementById("level-editor").style.display = "flex";
+  renderEditorGrid();
+}
+
+function hideLevelEditor() {
+  isEditorOpen = false;
+  document.getElementById("level-editor").style.display = "none";
+  resumeGame();
+}
+
+function renderEditorGrid() {
+  const gridContainer = document.getElementById("grid-container");
+  gridContainer.innerHTML = "";
+  
+  // Set grid template columns based on maze width
+  gridContainer.style.gridTemplateColumns = `repeat(${mazeCols}, 40px)`;
+  
+  for (let r = 0; r < maze.length; r++) {
+    for (let c = 0; c < maze[r].length; c++) {
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      cell.dataset.row = r;
+      cell.dataset.col = c;
+      if (maze[r][c] === 1) {
+        cell.classList.add("wall");
+      } else if (maze[r][c] === 2) {
+        cell.classList.add("pellet");
+      } else if (maze[r][c] === 3) {
+        cell.classList.add("pellet"); // Reusing pellet class for power pellet styling
+        cell.classList.add("power-pellet"); // Add specific class for power pellets
+      } else if (maze[r][c] === 4) {
+        cell.classList.add("ghost"); // New ghost cell style
+        // If a ghost has a saved color, apply it.
+        if (cell.dataset.ghostColor) {
+          cell.style.backgroundColor = cell.dataset.ghostColor;
+        }
+      }
+      cell.addEventListener("click", (e) => {
+        if (editorMode === 'wall') {
+          if (cell.classList.contains("wall")) {
+            cell.classList.remove("wall");
+            maze[r][c] = 0;
+          } else {
+            cell.classList.add("wall");
+            maze[r][c] = 1;
+          }
+        } else if (editorMode === 'pellet') {
+          if (cell.classList.contains("pellet") && !cell.classList.contains("power-pellet")) {
+            cell.classList.remove("pellet");
+            maze[r][c] = 0;
+          } else {
+            cell.classList.add("pellet");
+            cell.classList.remove("power-pellet");
+            maze[r][c] = 2;
+          }
+        } else if (editorMode === 'power-pellet') { 
+          if (cell.classList.contains("power-pellet")) {
+            cell.classList.remove("pellet");
+            cell.classList.remove("power-pellet");
+            maze[r][c] = 0;
+          } else {
+            cell.classList.add("pellet");
+            cell.classList.add("power-pellet");
+            maze[r][c] = 3;
+          }
+        } else if (editorMode === 'ghost') {
+          // When in ghost mode, if the cell already is marked as ghost, show the ghost context menu;
+          // otherwise add a ghost to the cell.
+          if (cell.classList.contains("ghost")) {
+            showGhostContextMenu(e, cell, r, c);
+          } else {
+            cell.classList.add("ghost");
+            maze[r][c] = 4;
+          }
+        } else if (editorMode === 'eraser') {
+          cell.classList.remove("wall", "pellet", "power-pellet", "ghost");
+          maze[r][c] = 0;
+        }
+      });
+
+      // Add mouseenter event listener for line drawing mode
+      cell.addEventListener("mouseenter", () => {
+        if (editorMode === 'line' && isDrawing) {
+          const r = parseInt(cell.dataset.row);
+          const c = parseInt(cell.dataset.col);
+          cell.classList.add("wall");
+          maze[r][c] = 1;
+        }
+      });
+      gridContainer.appendChild(cell);
+    }
+  }
+
+  // Add mousedown and mouseup event listeners for line drawing activation
+  gridContainer.addEventListener("mousedown", () => {
+    if (editorMode === 'line') {
+      isDrawing = true;
+    }
+  });
+
+  gridContainer.addEventListener("mouseup", () => {
+    isDrawing = false;
+  });
+}
+
+function handleSaveLevel() {
+  console.log("handleSaveLevel called");
+}
+
+function handleShareLevelEditor() {
+  const levelName = document.getElementById("level-name-editor").value;
+  const levelAuthor = document.getElementById("level-author-editor").value;
+  if (!levelName || !levelAuthor) {
+    alert("Please enter both level name and author name.");
+    return;
+  }
+
+  const shareCode = btoa(JSON.stringify(maze));
+  sharedLevels.push({
+    name: levelName,
+    author: levelAuthor,
+    maze: maze
+  });
+  document.getElementById("share-level-editor-named").style.display = "none";
+  document.getElementById("share-link-editor").textContent = "Level shared!";
+  document.getElementById("share-link-editor").style.display = "block";
+  showSharedLevels();
+}
+
+function showLevelCompleteModal() {
+  levelCompleted = true;
+  const modal = document.getElementById("level-complete");
+  modal.querySelector("h2").textContent = "Level Complete!";
+  const playBtn = document.getElementById("play-again-btn");
+  playBtn.textContent = "Play Again";
+  playBtn.onclick = () => {
+    window.location.reload();
+  };
+  const shareCode = btoa(JSON.stringify(maze));
+  const shareLink = window.location.origin + window.location.pathname + "?level=" + encodeURIComponent(shareCode);
+  document.getElementById("share-link").textContent = shareLink;
+  modal.style.display = "flex";
+}
+
+function showWinScreen() {
+  const modal = document.getElementById("level-complete");
+  modal.querySelector("h2").textContent = "You Win!";
+  const playBtn = document.getElementById("play-again-btn");
+  playBtn.textContent = "Next Level";
+  playBtn.onclick = showDoesntWorkScreen;
+  modal.style.display = "flex";
+}
+
+function hideWinScreen() {
+  const modal = document.getElementById("level-complete");
+  modal.style.display = "none";
+}
+
+function nextLevel() {
+  hideWinScreen();
+  resumeGame();
+  scene.remove(pelletGroup);
+  pelletGroup = new THREE.Group();
+  createPellets();
+  scene.add(pelletGroup);
+  pacman.gridPos = { row: 1, col: 1 };
+  pacman.mesh.position.copy(gridToWorld(1, 1, 1));
+  pacman.moving = false;
+  ghosts.forEach(ghost => {
+    ghost.gridPos = { row: 1, col: mazeCols - 2 };
+    ghost.mesh.position.copy(gridToWorld(1, mazeCols - 2, 1));
+    ghost.moving = false;
+  });
+  levelCompleted = false;
+}
+
+function handleShareLevelComplete() {
+  const levelName = document.getElementById("level-name-complete").value;
+  const levelAuthor = document.getElementById("level-author-complete").value;
+  if (!levelName || !levelAuthor) {
+    alert("Please enter both level name and author name.");
+    return;
+  }
+
+  sharedLevels.push({
+    name: levelName,
+    author: levelAuthor,
+    maze: maze
+  });
+  document.getElementById("share-level-complete-named").style.display = "none";
+  document.getElementById("share-link").textContent = "Level shared!";
+  document.getElementById("share-link").style.display = "block";
+  showSharedLevels();
+}
+
+function showViewLevelsModal() {
+  pauseGame();
+  document.getElementById("view-levels").style.display = "flex";
+  openLevelTab('sample-levels');
+}
+
+function hideViewLevelsModal() {
+  document.getElementById("view-levels").style.display = "none";
+  resumeGame();
+}
+
+function openLevelTab(tabName) {
+  const tabContents = document.querySelectorAll('.level-tab-content');
+  const tabButtons = document.querySelectorAll('.tab-button');
+
+  tabContents.forEach(content => {
+    content.style.display = 'none';
+  });
+
+  tabButtons.forEach(button => {
+    button.classList.remove('active');
+  });
+
+  document.getElementById(tabName).style.display = 'block';
+  document.querySelector(`.tab-button[data-tab="${tabName}"]`).classList.add('active');
+
+  if (tabName === 'sample-levels') {
+    showSampleLevels();
+  } else if (tabName === 'custom-levels') {
+    showSharedLevels();
+  }
+}
+
+function showSampleLevels() {
+  const levelsList = document.getElementById("levels-list-sample");
+  levelsList.innerHTML = "";
+  sampleLevels.forEach(level => {
+    const levelItem = document.createElement("div");
+    levelItem.classList.add("level-item");
+    levelItem.innerHTML = `<strong>${level.name}</strong><br><span style="font-size: 0.8em;">By: Websim.AI</span>`;
+    levelItem.addEventListener("click", () => {
+      const shareCode = btoa(JSON.stringify(level.maze));
+      window.location.href = window.location.pathname + "?level=" + encodeURIComponent(shareCode);
+    });
+    levelsList.appendChild(levelItem);
+  });
+}
+
+function showSharedLevels() {
+  const levelsList = document.getElementById("levels-list-custom");
+  levelsList.innerHTML = "";
+  if (sharedLevels.length === 0) {
+    levelsList.textContent = "No custom levels shared yet!";
+    return;
+  }
+  sharedLevels.forEach((level, index) => {
+    const levelItem = document.createElement("div");
+    levelItem.classList.add("level-item");
+    levelItem.innerHTML = `<strong>${level.name}</strong> by ${level.author}`;
+    levelItem.addEventListener("click", () => {
+      maze = level.maze;
+      mazeRows = maze.length;
+      mazeCols = maze[0].length;
+      offsetX = - (mazeCols * cellSize) / 2 + cellSize / 2;
+      offsetZ = - (mazeRows * cellSize) / 2 + cellSize / 2;
+
+      scene.remove(mazeGroup);
+      createMaze();
+
+      scene.remove(pelletGroup);
+      pelletGroup = new THREE.Group();
+      createPellets();
+      scene.add(pelletGroup);
+
+      pacman.gridPos = { row: 1, col: 1 };
+      pacman.mesh.position.copy(gridToWorld(1, 1, 1));
+      pacman.moving = false;
+      ghosts = []; // Clear existing ghosts
+      createGhosts(); // Re-create ghosts based on loaded maze
+      levelCompleted = false;
+      hideViewLevelsModal();
+    });
+    levelsList.appendChild(levelItem);
+  });
+}
+
+const sampleLevels = [
+  {
+    name: "Classic Maze",
+    maze: [
+      [1,1,1,1,1,1,1,1,1,1],
+      [1,2,2,2,2,2,2,2,2,1],
+      [1,2,1,1,2,1,1,2,2,1],
+      [1,2,1,0,0,0,1,2,2,1],
+      [1,2,0,0,1,0,0,0,2,1],
+      [1,2,1,0,0,0,1,2,2,1],
+      [1,2,2,2,2,2,2,2,2,1],
+      [1,1,1,1,1,1,1,1,1,1],
+      [0,0,0,0,0,4,0,0,0,0], // Ghost added to classic maze
+    ]
+  },
+  {
+    name: "Open Field",
+    maze: [
+      [1,1,1,1,1,1,1,1,1,1],
+      [1,2,2,2,2,2,2,2,2,1],
+      [1,2,2,2,2,2,2,2,2,1],
+      [1,2,2,2,2,2,2,2,2,1],
+      [1,2,2,2,2,2,2,2,2,1],
+      [1,2,2,2,2,2,2,2,2,1],
+      [1,2,2,2,2,2,2,2,3,1],
+      [1,1,1,1,1,1,1,1,1,1],
+      [0,0,0,0,0,4,0,0,0,0],
+    ]
+  },
+  {
+    name: "The ulti match", // Renamed level and added power pellets
+    maze: [
+      [1,1,1,1,1,1,1,1,1,1],
+      [1,2,2,2,2,2,2,2,2,1],
+      [1,2,1,1,2,1,1,2,2,1],
+      [1,2,1,0,0,0,1,2,2,1],
+      [1,2,0,0,1,0,0,0,2,1],
+      [1,2,1,0,0,0,1,2,2,1],
+      [1,2,2,2,2,2,3,2,3,1], // Added 2 power pellets
+      [1,1,1,1,1,1,1,1,1,1],
+      [0,0,0,0,0,4,0,0,0,0],
+    ]
+  },
+  {
+    name: "Big Challenge (18x18)",
+    maze: [
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+      [1,2,1,1,1,2,1,1,1,1,1,1,2,1,1,1,2,1],
+      [1,2,1,3,1,2,1,2,2,2,2,1,2,1,3,1,2,1],
+      [1,2,1,2,1,2,1,2,1,1,2,1,2,1,2,1,2,1],
+      [1,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,1],
+      [1,2,1,1,1,2,1,1,1,1,1,1,2,1,1,1,2,1],
+      [1,2,2,2,2,2,1,1,1,1,1,1,2,2,2,2,2,1],
+      [1,2,1,1,1,2,2,2,2,2,2,2,2,1,1,1,2,1],
+      [1,2,1,1,1,2,1,1,1,1,1,1,2,1,1,1,2,1],
+      [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+      [1,2,1,1,1,2,1,1,1,1,1,1,2,1,1,1,2,1],
+      [1,2,1,3,1,2,1,2,2,2,2,1,2,1,3,1,2,1],
+      [1,2,1,2,1,2,1,2,1,1,2,1,2,1,2,1,2,1],
+      [1,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,1],
+      [1,2,1,1,1,2,1,2,2,2,2,1,2,1,1,1,2,1],
+      [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [0,0,0,4,0,0,0,0,0,0,0,0,0,0,4,0,0,0],
+      [0,0,0,0,0,0,0,0,4,4,0,0,0,0,0,0,0,0],
+    ]
+  }
+];
+
+function playEditedLevel() {
+  // Check if the level has already been beaten
+  const shareCode = btoa(JSON.stringify(maze));
+  if (userBeatenLevels.includes(shareCode)) {
+    startGameWithMaze(maze); // Start the game if already beaten
+  } else {
+    // If not beaten, start the game and set a callback for level completion
+    startGameWithMaze(maze, () => {
+      userBeatenLevels.push(shareCode); // Mark level as beaten on completion
+    });
+  }
+}
+
+function startGameWithMaze(newMaze, completionCallback) {
+  maze = newMaze;
+  mazeRows = maze.length;
+  mazeCols = maze[0].length;
+  offsetX = - (mazeCols * cellSize) / 2 + cellSize / 2;
+  offsetZ = - (mazeRows * cellSize) / 2 + cellSize / 2;
+
+  scene.remove(mazeGroup);
+  createMaze();
+
+  scene.remove(pelletGroup);
+  pelletGroup = new THREE.Group();
+  createPellets();
+  scene.add(pelletGroup);
+
+  pacman.gridPos = { row: 1, col: 1 };
+  pacman.mesh.position.copy(gridToWorld(1, 1, 1));
+  pacman.moving = false;
+  ghosts = []; // Clear existing ghosts
+  createGhosts(); // Re-create ghosts based on loaded maze
+  levelCompleted = false;
+  hideLevelEditor();
+
+  // Override the existing checkLevelCompletion to include a callback
+  const originalCheckLevelCompletion = checkLevelCompletion;
+  checkLevelCompletion = () => {
+    if (!levelCompleted && pelletGroup.children.length === 0) {
+      levelCompleted = true;
+      pauseGame();
+      if (completionCallback) {
+        completionCallback(); // Execute the completion callback
+      }
+      showLevelCompleteModal(); // Then show level complete modal
+      // Restore the original checkLevelCompletion function
+      checkLevelCompletion = originalCheckLevelCompletion;
+    }
+  };
+}
+
+function showDoesntWorkScreen() {
+  document.getElementById("level-complete").style.display = "none";
+  document.getElementById("not-working-screen").style.display = "flex";
+}
+
+document.getElementById("back-from-not-working-btn").addEventListener("click", () => {
+  document.getElementById("not-working-screen").style.display = "none";
+  showViewLevelsModal();
+});
+
+function handleResizeMaze() {
+  const newWidth = parseInt(document.getElementById("maze-width").value, 10);
+  const newHeight = parseInt(document.getElementById("maze-height").value, 10);
+
+  if (isNaN(newWidth) || isNaN(newHeight) || newWidth <= 0 || newHeight <= 0 || newWidth > 50 || newHeight > 50) {
+    alert("Please enter valid width and height between 1 and 50.");
+    return;
+  }
+
+  const oldMaze = maze;
+  const newMaze = Array(newHeight).fill(null).map(() => Array(newWidth).fill(0));
+
+  // Copy old maze content to new maze (top-left corner)
+  for (let r = 0; r < Math.min(newHeight, oldMaze.length); r++) {
+    for (let c = 0; c < Math.min(newWidth, oldMaze[0].length); c++) {
+      newMaze[r][c] = oldMaze[r][c];
+    }
+  }
+
+  maze = newMaze;
+  mazeRows = newHeight;
+  mazeCols = newWidth;
+  offsetX = -(mazeCols * cellSize) / 2 + cellSize / 2;
+  offsetZ = -(mazeRows * cellSize) / 2 + cellSize / 2;
+
+  renderEditorGrid();
+  updateGameAfterMazeChange();
+}
+
+function updateGameAfterMazeChange() {
+  scene.remove(mazeGroup);
+  createMaze();
+
+  scene.remove(pelletGroup);
+  pelletGroup = new THREE.Group();
+  createPellets();
+  scene.add(pelletGroup);
+
+  pacman.gridPos = { row: 1, col: 1 };
+  pacman.mesh.position.copy(gridToWorld(1, 1, 1));
+  pacman.moving = false;
+  ghosts = []; // Clear existing ghosts
+  createGhosts(); // Re-create ghosts based on loaded maze
+  levelCompleted = false;
+}
+
+function handleClearMaze() {
+  const videoModal = document.getElementById("video-modal");
+  const video = document.getElementById("intermission-video");
+
+  // Set the video source
+  video.src = "/Pac-Man Intermission.mp4";
+
+  // Function to execute after the video ends
+  const onVideoEnded = () => {
+      // Clear the maze
+      for (let r = 0; r < mazeRows; r++) {
+          for (let c = 0; c < mazeCols; c++) {
+              maze[r][c] = 0;
+          }
+      }
+
+      // Re-render the editor grid
+      renderEditorGrid();
+      updateGameAfterMazeChange();
+
+      // Hide the video and remove the event listener
+      videoModal.style.display = "none";
+      video.removeEventListener('ended', onVideoEnded);
+      try {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE11 */
+            document.msExitFullscreen();
+        }
+      } catch (error) {
+        console.error("Error exiting fullscreen:", error);
+      }
+  };
+
+  // Event listener for when the video ends
+  video.addEventListener('ended', onVideoEnded);
+
+  // Show the video modal
+  videoModal.style.display = "flex";
+
+  // Play the video
+  video.play();
+
+  // Mute or set volume as needed
+  video.muted = false;
+  video.volume = 0.5; // Adjust volume as needed
+
+  // Fullscreen the video
+  video.requestFullscreen();
+}
+
+///////////////////////////////////
+// NEW FUNCTIONS FOR GHOST CONTEXT MENU
+function showGhostContextMenu(e, cell, row, col) {
+  // Prevent click propagation
+  e.stopPropagation();
+  ghostContextTarget = cell; // Store the target cell (ghost)
+  // Position the context menu next to the cell
+  const rect = cell.getBoundingClientRect();
+  const contextMenu = document.getElementById("ghost-context-menu");
+  contextMenu.style.top = (rect.bottom + window.scrollY) + "px";
+  contextMenu.style.left = (rect.left + window.scrollX) + "px";
+  contextMenu.style.display = "block";
+}
+
+function hideGhostContextMenu() {
+  const contextMenu = document.getElementById("ghost-context-menu");
+  contextMenu.style.display = "none";
+  ghostContextTarget = null;
+}
+
+// Called when "Delete" is clicked; removes the ghost
+function handleDeleteGhost() {
+  if (ghostContextTarget) {
+    const row = ghostContextTarget.dataset.row;
+    const col = ghostContextTarget.dataset.col;
+    maze[row][col] = 0;
+    ghostContextTarget.classList.remove("ghost");
+    hideGhostContextMenu();
+  }
+}
+
+// Called when "Change color" is clicked; asks for a new hex color and updates the ghost cell.
+function handleChangeGhostColor() {
+  if (ghostContextTarget) {
+    let newColor = prompt("Enter new color for ghost (hex format, e.g. #ff0000):", "#ff0000");
+    if (newColor) {
+      ghostContextTarget.style.backgroundColor = newColor;
+      ghostContextTarget.dataset.ghostColor = newColor;
+    }
+    hideGhostContextMenu();
+  }
+}
+
+// Hide the ghost context menu when clicking outside of it.
+document.addEventListener('click', (event) => {
+  const contextMenu = document.getElementById("ghost-context-menu");
+  if (contextMenu.style.display === "block" && !contextMenu.contains(event.target)) {
+    hideGhostContextMenu();
+  }
+});

@@ -1,0 +1,271 @@
+@import "compass/css3";
+@import "compass/css3/box-shadow";
+@import "_animation";
+
+@font-face
+{
+  font-family: Al-seana;
+  src: url('../fonts/al-seana.ttf');
+}
+
+* {
+  padding: 0px;
+  margin: 0px;
+}
+
+body {
+  font-size: 10px;
+}
+
+.container {
+  bottom: 0;
+  left: 0;
+  min-height: 600px;
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: url('../images/background.png') repeat;
+  background-size: 320px 320px;
+}
+
+.game {
+  height: 60em;
+  width: 45em;
+  position: relative;
+  min-height: 100%;
+  overflow: hidden;
+  margin: 0px auto 0px;
+  border-right: 2px solid;
+  border-left: 2px solid;
+  background: url('../images/background.png') repeat;
+  background-size: 320px 320px;
+}
+
+.playeranimator {
+  position: absolute;
+  width: 6em;
+  height: 5.8em;
+  margin-top: -5.8em;
+  margin-left: -2.8em;
+  z-index: 3;
+}
+
+.player {
+  width: 100%;
+  height: 100%;
+  background: url('../images/doodle_right.png') no-repeat;
+  background-size: cover;
+}
+
+.player.trampoline {
+  @include animation(doodle-trampoline-rotate 1s linear infinite)
+}
+
+.player.jetpack {
+  background: url('../images/doodle_jetpack.png') no-repeat;
+  background-size: cover;
+}
+
+.platform {
+  position: absolute;
+  background: url('../images/green_platform.png') no-repeat;
+  background-size: cover;
+  width: 4.5em;
+  height: 1.1em;
+  z-index: 2;
+}
+
+.obstacle {
+  position: absolute;
+  background: url('../images/red_platform.png') no-repeat;
+  background-size: cover;
+  width: 4.5em;
+  height: 1.1em;
+  z-index: 2;
+}
+
+.platform.fragile {
+  background: url('../images/brown_platform_breaking_animation.png') no-repeat;
+  background-size: 18em 1.2em;
+  background-position: 0em 0em;
+  width: 4.5em;
+  height: 1.2em;
+}
+
+.platform.fracturing {
+  background: red;
+}
+
+.platform.dying {
+  background: blue;
+}
+
+.item {
+  position: absolute;
+}
+
+.item.coin {
+  background: url('../images/ball.png') no-repeat;
+  background-size: cover;
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.item.trampoline {
+  background: url('../images/trampoline.png') no-repeat;
+  background-size: cover;
+  width: 4em;
+  height: 1.86em;
+  margin-top: 0.6em;
+  z-index: 99;
+}
+
+.item.jetpack {
+  background: url('../images/jetpack.png') no-repeat;
+  background-size: cover;
+  width: 1.75em;
+  height: 2.55em;
+  z-index: 99;
+}
+
+.scoreboard {
+  position: absolute;
+  width: 100%;
+  height: 1em;
+  background: rgba(167, 185, 205, 0.7);
+  border-bottom: 2px solid black;
+  @include box-shadow(rgba(black, 0.4) 0px 5px 10px);
+  font-family: Al-seana;
+  font-size: 3em;
+  padding: 0px 10px;
+  z-index: 100; 
+}
+
+.gameScene {
+  
+}
+
+.gameOverScene {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  font: bold;
+
+   .button {
+    position: absolute;
+    background: url('../images/button.png');
+    background-size: cover;
+    font-family: Al-seana;
+    font-size: 4em;
+    text-align: center;
+    width: 3em;
+    height: 1.07em;
+
+    .pressed {
+      background: url('../images/button-pressed.png');
+    }
+
+    a {
+      text-decoration: none;
+      color: black;
+    }
+  }
+
+  .button.playAgain {
+    top: 7em;
+    left: 4em;
+  }
+
+  .information {
+    position: absolute;
+    font-family: Al-seana;
+    font-size: 2em;
+    top: 4em;
+    left: 5.2em;
+    text-align: center;
+
+    .heading {
+      font-size: 3em;
+      color: #e6a399;
+    }
+
+    span {
+      font-size: 2em;
+      font-size: bold;
+    }
+  }
+}
+
+.menuScene {
+  position: absolute;
+  background-size: 550px 600px;
+  background: url('../images/menu-background.png') no-repeat;
+  background-size: cover;
+  height: 60em;
+  width: 39.6em;
+
+  .button {
+    position: absolute;
+    background: url('../images/button.png');
+    background-size: cover;
+    font-family: Al-seana;
+    font-size: 4em;
+    text-align: center;
+    width: 3em;
+    height: 1.08em;
+
+    .pressed {
+      background: url('../images/button-pressed.png');
+    }
+
+    a {
+      text-decoration: none;
+      color: black;
+    }
+  }
+
+  .button.play {
+    top: 5em;
+    left: 2.3em;
+  }
+
+  .button.about {
+    top: 6.4em;
+    left: 2.3em;
+  }
+
+  .doodle {
+    position: absolute;
+    left: 8em;
+    top: 50.2em;
+    width: 6em;
+    height: 5.8em;
+    margin-top: -6em;
+    margin-left: -2.8em;
+    background: url('../images/doodle_right.png') no-repeat;
+    background-size: cover;
+    @include animation(menu-doodle-jumping 0.3s ease-in infinite alternate);
+  }
+}
+
+@include keyframes(menu-doodle-jumping) {
+  from {
+    top: 40em;
+  }
+  to {
+    top: 50.2em;
+  }
+}
+
+@include keyframes(doodle-trampoline-rotate) {
+  from {
+    @include transform(rotate(0));
+  }
+  50% {
+    @include transform(rotate(180deg));
+  }
+  to {
+    @include transform(rotate(360deg));
+  }
+}

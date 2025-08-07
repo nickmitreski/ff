@@ -1,0 +1,15 @@
+scene.remove(mazeGroup);
+createMaze();
+
+scene.remove(pelletGroup);
+pelletGroup = new THREE.Group();
+createPellets();
+scene.add(pelletGroup);
+
+pacman.gridPos = { row: 1, col: 1 };
+pacman.mesh.position.copy(gridToWorld(1, 1, 1));
+pacman.moving = false;
+ghosts = []; // Clear existing ghosts
+createGhosts(); // Re-create ghosts based on loaded maze
+levelCompleted = false;
+hideViewLevelsModal();

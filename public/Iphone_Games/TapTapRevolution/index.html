@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tap Tap Revolution</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .menu-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .menu-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .game-container {
+            flex: 1;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .game-area {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lanes {
+            flex: 1;
+            display: flex;
+            position: relative;
+        }
+
+        .lane {
+            flex: 1;
+            position: relative;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+        }
+
+        .lane:last-child {
+            border-right: none;
+        }
+
+        .beat {
+            position: absolute;
+            width: 80%;
+            height: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            border-radius: 10px;
+            left: 10%;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.6);
+            animation: fall 2s linear;
+        }
+
+        .beat.perfect {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.6);
+        }
+
+        .beat.good {
+            background: linear-gradient(45deg, #45b7d1, #96c93d);
+            box-shadow: 0 0 20px rgba(69, 183, 209, 0.6);
+        }
+
+        .beat.miss {
+            background: linear-gradient(45deg, #ff4757, #ff3742);
+            box-shadow: 0 0 20px rgba(255, 71, 87, 0.6);
+        }
+
+        @keyframes fall {
+            from {
+                top: -20px;
+            }
+            to {
+                top: calc(100% - 60px);
+            }
+        }
+
+        .target-zone {
+            position: absolute;
+            bottom: 40px;
+            left: 10%;
+            width: 80%;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .target-zone.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .key-indicator {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .controls {
+            height: 60px;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .control-key {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border: 2px solid #444;
+            border-radius: 10px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-key:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-key.pressed {
+            background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
+            border-color: #666;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .menu-overlay.active {
+            display: flex;
+        }
+
+        .menu-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .menu-title {
+            font-size: 32px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .song-select {
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .song-select option {
+            background: #333;
+            color: white;
+        }
+
+        .menu-button-large {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+
+        .menu-button-large:hover {
+            transform: scale(1.05);
+        }
+
+        .combo-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .combo-display.show {
+            opacity: 1;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        .game-over.active {
+            display: flex;
+        }
+
+        .final-score {
+            font-size: 48px;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .accuracy {
+            font-size: 24px;
+            color: #4ecdc4;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                height: 80px;
+            }
+            
+            .control-key {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            
+            .target-zone {
+                bottom: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="score">Score: <span id="score">0</span></div>
+        <div class="combo">Combo: <span id="combo">0</span></div>
+        <button class="menu-button" id="menuBtn">Menu</button>
+    </div>
+
+    <div class="game-container">
+        <div class="game-area">
+            <div class="lanes">
+                <div class="lane" data-key="d">
+                    <div class="target-zone">
+                        <div class="key-indicator">D</div>
+                    </div>
+                </div>
+                <div class="lane" data-key="f">
+                    <div class="target-zone">
+                        <div class="key-indicator">F</div>
+                    </div>
+                </div>
+                <div class="lane" data-key="j">
+                    <div class="target-zone">
+                        <div class="key-indicator">J</div>
+                    </div>
+                </div>
+                <div class="lane" data-key="k">
+                    <div class="target-zone">
+                        <div class="key-indicator">K</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-key" data-key="d">D</div>
+            <div class="control-key" data-key="f">F</div>
+            <div class="control-key" data-key="j">J</div>
+            <div class="control-key" data-key="k">K</div>
+        </div>
+    </div>
+
+    <div class="combo-display" id="comboDisplay"></div>
+
+    <div class="menu-overlay" id="menuOverlay">
+        <div class="menu-content">
+            <div class="menu-title">Tap Tap Revolution</div>
+            <p>Select a song and start playing!</p>
+            <select class="song-select" id="songSelect">
+                <option value="seven_nation_army">Seven Nation Army - Easy</option>
+                <option value="holy_ghost">Holy Ghost - Medium</option>
+                <option value="its_time">It's Time - Hard</option>
+                <option value="lange_her">Lange Her - Legendary</option>
+            </select>
+            <button class="menu-button-large" id="startBtn">Start Game</button>
+            <button class="menu-button-large" id="resumeBtn" style="display: none;">Resume Game</button>
+        </div>
+    </div>
+
+    <div class="game-over" id="gameOver">
+        <div class="menu-content">
+            <div class="final-score">Final Score: <span id="finalScore">0</span></div>
+            <div class="accuracy">Accuracy: <span id="accuracy">0%</span></div>
+            <button class="menu-button-large" id="playAgainBtn">Play Again</button>
+            <button class="menu-button-large" id="menuBtn2">Main Menu</button>
+        </div>
+    </div>
+
+    <script>
+        class TapTapGame {
+            constructor() {
+                this.score = 0;
+                this.combo = 0;
+                this.maxCombo = 0;
+                this.hits = 0;
+                this.misses = 0;
+                this.totalBeats = 0;
+                this.isPlaying = false;
+                this.currentSong = null;
+                this.beats = [];
+                this.activeBeats = [];
+                this.audio = null;
+                this.gameStartTime = 0;
+                this.beatData = {};
+                
+                this.initializeElements();
+                this.bindEvents();
+                this.loadBeatData();
+                this.showMenu();
+            }
+
+            initializeElements() {
+                this.scoreElement = document.getElementById('score');
+                this.comboElement = document.getElementById('combo');
+                this.comboDisplay = document.getElementById('comboDisplay');
+                this.menuOverlay = document.getElementById('menuOverlay');
+                this.gameOver = document.getElementById('gameOver');
+                this.songSelect = document.getElementById('songSelect');
+                this.startBtn = document.getElementById('startBtn');
+                this.resumeBtn = document.getElementById('resumeBtn');
+                this.playAgainBtn = document.getElementById('playAgainBtn');
+                this.menuBtn = document.getElementById('menuBtn');
+                this.menuBtn2 = document.getElementById('menuBtn2');
+                this.finalScoreElement = document.getElementById('finalScore');
+                this.accuracyElement = document.getElementById('accuracy');
+                
+                this.lanes = document.querySelectorAll('.lane');
+                this.controlKeys = document.querySelectorAll('.control-key');
+                this.targetZones = document.querySelectorAll('.target-zone');
+            }
+
+            bindEvents() {
+                this.startBtn.addEventListener('click', () => this.startGame());
+                this.resumeBtn.addEventListener('click', () => this.resumeGame());
+                this.playAgainBtn.addEventListener('click', () => this.playAgain());
+                this.menuBtn.addEventListener('click', () => this.toggleMenu());
+                this.menuBtn2.addEventListener('click', () => this.showMenu());
+                
+                document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+                document.addEventListener('keyup', (e) => this.handleKeyRelease(e));
+                
+                this.controlKeys.forEach(key => {
+                    // Mouse events
+                    key.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        this.handleKeyPress({ key: key.dataset.key });
+                    });
+                    key.addEventListener('mouseup', (e) => {
+                        e.preventDefault();
+                        this.handleKeyRelease({ key: key.dataset.key });
+                    });
+                    key.addEventListener('mouseleave', (e) => {
+                        e.preventDefault();
+                        this.handleKeyRelease({ key: key.dataset.key });
+                    });
+                    // Touch events
+                    key.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        this.handleKeyPress({ key: key.dataset.key });
+                    });
+                    key.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        this.handleKeyRelease({ key: key.dataset.key });
+                    });
+                    key.addEventListener('touchcancel', (e) => {
+                        e.preventDefault();
+                        this.handleKeyRelease({ key: key.dataset.key });
+                    });
+                });
+            }
+
+            async loadBeatData() {
+                const songs = ['seven_nation_army', 'holy_ghost', 'its_time', 'lange_her'];
+                
+                for (const song of songs) {
+                    try {
+                        const response = await fetch(`${song}.txt`);
+                        const text = await response.text();
+                        this.beatData[song] = this.parseBeatFile(text);
+                    } catch (error) {
+                        console.error(`Failed to load beat data for ${song}:`, error);
+                        // Create some default beat data if file loading fails
+                        this.beatData[song] = this.createDefaultBeats();
+                    }
+                }
+            }
+
+            parseBeatFile(text) {
+                const beats = [];
+                const lines = text.trim().split('\n');
+                
+                for (const line of lines) {
+                    const [time, lanes] = line.split('|');
+                    const beatTime = parseInt(time);
+                    const laneNumbers = lanes.split(',').map(l => parseInt(l));
+                    
+                    beats.push({
+                        time: beatTime,
+                        lanes: laneNumbers
+                    });
+                }
+                
+                return beats.sort((a, b) => a.time - b.time);
+            }
+
+            createDefaultBeats() {
+                const beats = [];
+                for (let i = 0; i < 50; i++) {
+                    const time = i * 1000 + 2000; // Start at 2 seconds, every 1 second
+                    const lane = (i % 4) + 1; // Cycle through lanes
+                    beats.push({
+                        time: time,
+                        lanes: [lane]
+                    });
+                }
+                return beats;
+            }
+
+            showMenu() {
+                this.menuOverlay.classList.add('active');
+                this.gameOver.classList.remove('active');
+                this.isPlaying = false;
+                if (this.audio) {
+                    this.audio.pause();
+                    this.audio = null;
+                }
+            }
+
+            toggleMenu() {
+                if (this.isPlaying) {
+                    this.menuOverlay.classList.toggle('active');
+                    if (this.menuOverlay.classList.contains('active')) {
+                        this.audio.pause();
+                    } else {
+                        this.audio.play();
+                    }
+                } else {
+                    this.showMenu();
+                }
+            }
+
+            startGame() {
+                const selectedSong = this.songSelect.value;
+                this.currentSong = selectedSong;
+                this.beats = [...this.beatData[selectedSong]];
+                this.totalBeats = this.beats.length;
+                
+                this.menuOverlay.classList.remove('active');
+                this.isPlaying = true;
+                this.gameStartTime = Date.now();
+                
+                this.loadAudio(selectedSong);
+                this.startBeatSpawner();
+            }
+
+            resumeGame() {
+                this.menuOverlay.classList.remove('active');
+                if (this.audio) {
+                    this.audio.play();
+                }
+            }
+
+            loadAudio(songName) {
+                this.audio = new Audio(`${songName}.mp3`);
+                this.audio.addEventListener('ended', () => this.endGame());
+                this.audio.play().catch(error => {
+                    console.error('Audio playback failed:', error);
+                    // Continue without audio if it fails to load
+                });
+            }
+
+            startBeatSpawner() {
+                const spawnInterval = setInterval(() => {
+                    if (!this.isPlaying) {
+                        clearInterval(spawnInterval);
+                        return;
+                    }
+
+                    const currentTime = Date.now() - this.gameStartTime;
+                    
+                    // Spawn beats that should appear now
+                    while (this.beats.length > 0 && this.beats[0].time <= currentTime + 2000) {
+                        const beat = this.beats.shift();
+                        this.spawnBeat(beat);
+                    }
+                    
+                    // Check if all beats have been spawned
+                    if (this.beats.length === 0 && this.activeBeats.length === 0) {
+                        setTimeout(() => this.endGame(), 2000);
+                    }
+                }, 50);
+            }
+
+            spawnBeat(beatData) {
+                beatData.lanes.forEach(laneIndex => {
+                    const lane = this.lanes[laneIndex - 1];
+                    const beat = document.createElement('div');
+                    beat.className = 'beat';
+                    beat.dataset.time = beatData.time;
+                    beat.dataset.lane = laneIndex;
+                    
+                    lane.appendChild(beat);
+                    this.activeBeats.push(beat);
+                    
+                    // Remove beat after animation
+                    setTimeout(() => {
+                        if (beat.parentNode) {
+                            beat.parentNode.removeChild(beat);
+                            this.activeBeats = this.activeBeats.filter(b => b !== beat);
+                            
+                            // Count as miss if not hit
+                            if (!beat.classList.contains('hit')) {
+                                this.handleMiss();
+                            }
+                        }
+                    }, 2000);
+                });
+            }
+
+            handleKeyPress(event) {
+                if (!this.isPlaying) return;
+                
+                const key = event.key.toLowerCase();
+                const laneIndex = this.getLaneIndex(key);
+                
+                if (laneIndex === -1) return;
+                
+                // Visual feedback
+                this.controlKeys[laneIndex].classList.add('pressed');
+                this.targetZones[laneIndex].classList.add('active');
+                
+                // Check for beat hit
+                this.checkBeatHit(laneIndex);
+            }
+
+            handleKeyRelease(event) {
+                const key = event.key.toLowerCase();
+                const laneIndex = this.getLaneIndex(key);
+                
+                if (laneIndex === -1) return;
+                
+                // Remove visual feedback
+                this.controlKeys[laneIndex].classList.remove('pressed');
+                this.targetZones[laneIndex].classList.remove('active');
+            }
+
+            getLaneIndex(key) {
+                const keyMap = { 'd': 0, 'f': 1, 'j': 2, 'k': 3 };
+                return keyMap[key] || -1;
+            }
+
+            checkBeatHit(laneIndex) {
+                const currentTime = Date.now() - this.gameStartTime;
+                const tolerance = 400; // 400ms tolerance
+                
+                let hitBeat = null;
+                let bestTimeDiff = Infinity;
+                
+                for (const beat of this.activeBeats) {
+                    if (parseInt(beat.dataset.lane) === laneIndex + 1 && !beat.classList.contains('hit')) {
+                        const beatTime = parseInt(beat.dataset.time);
+                        const timeDiff = Math.abs(currentTime - beatTime);
+                        
+                        if (timeDiff <= tolerance && timeDiff < bestTimeDiff) {
+                            hitBeat = beat;
+                            bestTimeDiff = timeDiff;
+                        }
+                    }
+                }
+                
+                if (hitBeat) {
+                    this.handleHit(hitBeat, bestTimeDiff);
+                }
+            }
+
+            handleHit(beat, timeDiff) {
+                beat.classList.add('hit');
+                
+                let points = 0;
+                let accuracy = '';
+                
+                if (timeDiff <= 100) {
+                    beat.classList.add('perfect');
+                    points = 10;
+                    accuracy = 'Perfect!';
+                } else if (timeDiff <= 200) {
+                    beat.classList.add('good');
+                    points = 8;
+                    accuracy = 'Good!';
+                } else {
+                    beat.classList.add('good');
+                    points = 5;
+                    accuracy = 'OK';
+                }
+                
+                this.score += points;
+                this.hits++;
+                this.combo++;
+                this.maxCombo = Math.max(this.maxCombo, this.combo);
+                
+                this.updateDisplay();
+                this.showCombo(accuracy);
+            }
+
+            handleMiss() {
+                this.combo = 0;
+                this.misses++;
+                this.updateDisplay();
+            }
+
+            showCombo(text) {
+                this.comboDisplay.textContent = text;
+                this.comboDisplay.classList.add('show');
+                
+                setTimeout(() => {
+                    this.comboDisplay.classList.remove('show');
+                }, 500);
+            }
+
+            updateDisplay() {
+                this.scoreElement.textContent = this.score;
+                this.comboElement.textContent = this.combo;
+            }
+
+            endGame() {
+                this.isPlaying = false;
+                if (this.audio) {
+                    this.audio.pause();
+                }
+                
+                const accuracy = this.totalBeats > 0 ? Math.round((this.hits / this.totalBeats) * 100) : 0;
+                
+                this.finalScoreElement.textContent = this.score;
+                this.accuracyElement.textContent = `${accuracy}%`;
+                
+                this.gameOver.classList.add('active');
+            }
+
+            playAgain() {
+                this.resetGame();
+                this.startGame();
+            }
+
+            resetGame() {
+                this.score = 0;
+                this.combo = 0;
+                this.maxCombo = 0;
+                this.hits = 0;
+                this.misses = 0;
+                this.totalBeats = 0;
+                this.activeBeats = [];
+                this.gameOver.classList.remove('active');
+                
+                // Clear all beats
+                document.querySelectorAll('.beat').forEach(beat => beat.remove());
+                
+                this.updateDisplay();
+            }
+        }
+
+        // Initialize the game when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new TapTapGame();
+        });
+    </script>
+</body>
+</html> 

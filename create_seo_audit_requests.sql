@@ -1,0 +1,1 @@
+create table seo_audit_requests ( id uuid primary key default gen_random_uuid(), created_at timestamp with time zone default now(), website_url text not null, email text not null, notes text, audit_status text default 'no audit yet', contact_status text default 'not contacted yet' );

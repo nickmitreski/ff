@@ -1,0 +1,120 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.png" type="image/png">
+    <script type="importmap">
+        {
+            "imports": {
+                "./game.js": "./game.js",
+                "./player.js": "./player.js",
+                "./terrain.js": "./terrain.js",
+                "./chunk.js": "./chunk.js",
+                "./collectible.js": "./collectible.js",
+                "./enemy.js": "./enemy.js",
+                "./bouncer_enemy.js": "./bouncer_enemy.js",
+                "./metal_enemy.js": "./metal_enemy.js",
+                "./assets.js": "./assets.js",
+                "./controls.js": "./controls.js",
+                "./utils.js": "./utils.js",
+                "./soundManager.js": "./soundManager.js"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="overall-wrapper">
+        <div id="left-info-panel" class="info-panel">
+            <h2>Collectibles</h2>
+            <div class="collectible-item">
+                <img src="gold.png" alt="Gold Nugget">
+                <h3>Gold Nugget</h3>
+                <p>A common mineral found throughout the mines.</p>
+                <p><strong>How to Get:</strong> Destroy breakable blocks or find them floating in caves.</p>
+            </div>
+            <div class="collectible-item">
+                <img src="banandium_gem.png" alt="Banandium Gem">
+                <h3>Banandium Gem</h3>
+                <p>A rare, banana-shaped gem, rumored to be Donkey Kong's favorite.</p>
+                <p><strong>How to Get:</strong> Look for them in higher, hard-to-reach areas.</p>
+            </div>
+        </div>
+
+        <div id="main-game-area">
+            <div id="game-container">
+                <canvas id="gameCanvas"></canvas>
+                <div id="game-info">
+                    <div id="health-container">
+                        <!-- Hearts will be dynamically added here -->
+                    </div>
+                    <p id="gold-score">Gold: 0</p>
+                    <p id="banandium-score">Banandium Gems: 0</p>
+                </div>
+                <div id="controls-info">
+                    <p><strong>Controls:</strong></p>
+                    <ul>
+                        <li><strong>A / D:</strong> Move Left / Right</li>
+                        <li><strong>W:</strong> Jump</li>
+                        <li><strong>K:</strong> Punch</li>
+                        <li><strong>L:</strong> Tear off chunk / Throw chunk (while holding)</li>
+                    </ul>
+                </div>
+            </div>
+            <div id="start-screen">
+                <img id="game-logo" src="bananzawebsimed.png" alt="Donkey Kong Bananza Websim Edition Logo">
+                <p>CLICK TO START</p>
+                <p>Loading Assets...</p>
+            </div>
+            <div id="game-over-screen" style="display: none;">
+                <!-- Game over content will be dynamically added here by game.js -->
+            </div>
+        </div>
+
+        <div id="right-info-panel" class="info-panel">
+            <h2>Enemies</h2>
+            <div class="enemy-item">
+                <img src="enemy_walk1.png" alt="Mole-Bot">
+                <h3>Mole-Bot</h3>
+                <p>A simple, ground-crawling robot.</p>
+                <p><strong>How to Defeat:</strong> Punch it or hit it with a thrown chunk.</p>
+            </div>
+            <div class="enemy-item">
+                <img src="bouncer_enemy.png" alt="Bouncer">
+                <h3>Bouncer</h3>
+                <p>An erratic, bouncing energy sphere.</p>
+                <p><strong>How to Defeat:</strong> Hit it with a thrown chunk or a punch.</p>
+            </div>
+            <div class="enemy-item">
+                <img src="metal_enemy_walk1.png" alt="Metal Armadillo-Bot">
+                <h3>Metal Armadillo-Bot</h3>
+                <p>Heavily armored, this bot is tough.</p>
+                <p><strong>How to Defeat:</strong> Immune to punches. Must be defeated with a thrown chunk.</p>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { Game } from './game.js';
+
+        const game = new Game();
+        const startScreen = document.getElementById('start-screen');
+
+        // Initial setup before assets are loaded
+        game.assetManager.onDone(() => {
+            startScreen.querySelector('p:last-child').textContent = 'Click to Play!';
+            startScreen.classList.add('loaded'); // Add class to indicate loading is done
+        });
+
+        startScreen.addEventListener('click', () => {
+            if (startScreen.classList.contains('loaded')) {
+                startScreen.style.display = 'none'; // Hide the start screen
+                game.init(); // Start the game initialization
+            }
+        });
+
+        // Start loading assets immediately
+        game.preloadAssets();
+    </script>
+</body>
+</html>

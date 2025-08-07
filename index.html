@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="#008CFF" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://us.i.posthog.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: https://cur.cursors-4u.net; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://us.i.posthog.com https://file.garden https://cur.cursors-4u.net https://fonts.googleapis.com https://fonts.gstatic.com ws://localhost:* wss://localhost:* http://localhost:* https://localhost:*; frame-src 'self'; object-src 'none'; base-uri 'self';" />
+    <meta name="description" content="Flash Forward Digital - We flash forward your business with modern web design, AI automation & branding. Experience our retro Windows 95 demo." />
+    
+    <!-- Critical CSS for above-the-fold content -->
+    <style>
+      /* Critical CSS for initial render */
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { 
+        margin: 0; 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: #000;
+        overflow-x: hidden;
+      }
+      #root { 
+        min-height: 100vh; 
+        display: flex;
+        flex-direction: column;
+        width: 100vw;
+      }
+      .sr-only { 
+        position: absolute; 
+        width: 1px; 
+        height: 1px; 
+        padding: 0; 
+        margin: -1px; 
+        overflow: hidden; 
+        clip: rect(0, 0, 0, 0); 
+        white-space: nowrap; 
+        border: 0; 
+      }
+      .app-container { 
+        width: 100vw; 
+        overflow-x: hidden; 
+        min-height: 100vh;
+        position: relative;
+      }
+      .win95 { 
+        width: 100vw; 
+        height: 100vh; 
+        overflow: hidden; 
+        position: relative;
+      }
+      .iphone-container { 
+        width: 100vw; 
+        height: 100vh; 
+        overflow: hidden; 
+        position: relative;
+      }
+      /* Hero section critical styles */
+      .hero-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+        color: #fff;
+        text-align: center;
+        padding: 2rem;
+      }
+      /* Critical text styles */
+      .hero-title {
+        font-size: clamp(2rem, 5vw, 4rem);
+        font-weight: bold;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+      }
+      .hero-subtitle {
+        font-size: clamp(1rem, 2vw, 1.5rem);
+        opacity: 0.9;
+        margin-bottom: 2rem;
+      }
+      @media (max-width: 768px) { 
+        .app-container { 
+          width: 100vw; 
+          overflow-x: hidden; 
+        }
+        .win95 { 
+          width: 100vw; 
+          overflow-x: hidden; 
+          touch-action: manipulation; 
+        }
+        .hero-section {
+          padding: 0 1rem;
+        }
+      }
+      /* Loading states */
+      .loading { 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        height: 100vh; 
+        background: #000;
+      }
+      .loading-spinner { 
+        animation: spin 1s linear infinite; 
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #008CFF;
+        border-radius: 50%;
+      }
+      /* LCP optimization */
+      .lcp-image {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+        display: block;
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+      }
+      .lcp-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+      /* Image optimization */
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+      }
+      .optimized-image {
+        will-change: transform;
+        transform: translateZ(0);
+        backface-visibility: hidden;
+      }
+      @keyframes spin { 
+        from { transform: rotate(0deg); } 
+        to { transform: rotate(360deg); } 
+      }
+    </style>
+    <title>Flash Forward Digital - Web Design & AI Agency</title>
+    <link rel="canonical" href="https://flashforwarddigital.com" />
+    <link rel="icon" type="image/png" href="/flashforward.png" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Preload critical resources -->
+    <!-- Critical resources with optimized loading -->
+    <link rel="modulepreload" href="/src/main.tsx" crossorigin />
+    <!-- Optimized image preloading -->
+    <link rel="preload" href="/flashforward.png" as="image" fetchpriority="high" type="image/png" />
+    <link rel="preload" href="/bg1.png" as="image" fetchpriority="high" type="image/png" />
+    <link rel="preload" href="/bg2.png" as="image" fetchpriority="high" type="image/png" />
+    <link rel="preload" href="/bg3.png" as="image" fetchpriority="high" type="image/png" />
+    <link rel="preload" href="/bg4.png" as="image" fetchpriority="high" type="image/png" />
+    <!-- Non-critical external resources -->
+    <link rel="dns-prefetch" href="//us.i.posthog.com" />
+    <link rel="dns-prefetch" href="//file.garden" />
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+    <link rel="preconnect" href="https://us.i.posthog.com" crossorigin />
+    <link rel="preconnect" href="https://file.garden" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://flashforwarddigital.com" />
+    <meta property="og:title" content="Flash Forward Digital - Web Design & AI Agency" />
+    <meta property="og:description" content="We flash forward your business with modern web design, AI automation & branding. Experience our retro Windows 95 demo." />
+    <meta property="og:image" content="https://flashforwarddigital.com/flashforward.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:site_name" content="Flash Forward Digital" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://flashforwarddigital.com" />
+    <meta property="twitter:title" content="Flash Forward Digital - Web Design & AI Agency" />
+    <meta property="twitter:description" content="We flash forward your business with modern web design, AI automation & branding. Experience our retro Windows 95 demo." />
+    <meta property="twitter:image" content="https://flashforwarddigital.com/flashforward.png" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Flash Forward Digital",
+      "url": "https://flashforwarddigital.com",
+      "logo": "https://flashforwarddigital.com/flashforward.png",
+      "description": "We flash forward your business with modern web design, AI automation, branding & content creation. Experience our retro Windows 95 demo while we transform your digital presence.",
+      "sameAs": [
+        "https://twitter.com/flashforwarddigital",
+        "https://linkedin.com/company/flashforwarddigital"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": "English"
+      },
+      "serviceArea": {
+        "@type": "GeoCircle",
+        "geoMidpoint": {
+          "@type": "GeoCoordinates",
+          "latitude": 0,
+          "longitude": 0
+        },
+        "geoRadius": "50000"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Digital Agency Services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Web Design & Development",
+              "description": "Custom websites that look great and perform even better"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "AI & Automation",
+              "description": "Leverage the power of AI to streamline your business"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Branding & Identity",
+              "description": "Create a memorable brand that stands out"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Content Creation",
+              "description": "Engaging content that tells your story"
+            }
+          }
+        ]
+      }
+    }
+    </script>
+  </head>
+  <body>
+    <div id="root">
+      <!-- Loading state for better perceived performance -->
+      <div class="loading">
+        <div class="loading-spinner" style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #008CFF; border-radius: 50%;"></div>
+      </div>
+      
+      <!-- LCP Hero Section - Immediately discoverable -->
+      <div class="hero-section" style="display: none;">
+        <div class="lcp-container">
+          <img 
+            src="/flashforward.png" 
+            alt="Flash Forward Digital Logo" 
+            class="lcp-image optimized-image"
+            width="512"
+            height="512"
+            fetchpriority="high"
+          />
+          <h1 class="hero-title">Flash Forward Digital</h1>
+          <p class="hero-subtitle">Web Design & AI Agency</p>
+        </div>
+        <!-- Preload background images for LCP -->
+        <img src="/bg1.png" alt="" style="display: none;" fetchpriority="high" />
+        <img src="/bg2.png" alt="" style="display: none;" fetchpriority="high" />
+        <img src="/bg3.png" alt="" style="display: none;" fetchpriority="high" />
+        <img src="/bg4.png" alt="" style="display: none;" fetchpriority="high" />
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx" defer crossorigin></script>
+    <noscript>
+      <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+        <h1>Flash Forward Digital</h1>
+        <p>JavaScript is required to view this site. Please enable JavaScript in your browser.</p>
+      </div>
+    </noscript>
+  </body>
+</html>

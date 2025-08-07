@@ -1,0 +1,16 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    Heiðar -- Master -- #derp
+    Svenni -- helper -- #svenni
+
+# THANKS
+
+    Heiðar
+
+# TECHNOLOGY COLOPHON
+
+    HTML5, CSS3
+    Zepto, Modernizr

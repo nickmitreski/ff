@@ -1,0 +1,690 @@
+/* 
+ * CSS Linter Configuration
+ * These @tailwind directives are valid Tailwind CSS syntax.
+ * The CSS linter doesn't recognize Tailwind's custom at-rules, but they are correct.
+ */
+/* csslint disable:unknownAtRules */
+/* stylelint-disable at-rule-no-unknown */
+
+/* Tailwind CSS Directives - These are valid and required for Tailwind to work */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Use system fonts instead of local font files */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 20s linear infinite;
+}
+
+/* Mobile optimizations for choice screen */
+@media (max-width: 768px) {
+  .app-container {
+    width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  section {
+    width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  /* Prevent horizontal scrolling */
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  /* Fix for popups */
+  .fixed {
+    position: fixed !important;
+  }
+  
+  /* Ensure popups take full screen */
+  .fixed.inset-0 {
+    width: 100vw !important;
+    height: 100vh !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* Windows 95 mobile optimizations */
+@media (max-width: 768px) {
+  .win95 {
+    width: 100vw;
+    overflow-x: hidden;
+    touch-action: manipulation;
+  }
+  
+  /* Improve touch targets */
+  .win95-desktop-icon, 
+  .win95-button,
+  .win95-window-button,
+  .win95-taskbar-item {
+    touch-action: manipulation;
+  }
+  
+  /* Ensure windows are properly sized */
+  .win95-window.maximized {
+    width: 100vw !important;
+    height: calc(100vh - 28px) !important;
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 28px !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* Hide any Winamp window with an empty title or content (blank folder artifact) */
+.win95-window:has(.win95-window-title:empty),
+.win95-window .win95-window-content:empty {
+  display: none !important;
+}
+
+/* Hide Winamp window if its content area is empty */
+.winamp-window .win95-window-content:empty {
+  display: none !important;
+}
+
+/* Windows 95 Classic Mouse Cursors (local) */
+html, body, .win95, .win95-window, .win95-folder-content, .win95-folder-item {
+  cursor: default;
+}
+
+/* To add more Windows 95 cursors, place .cur files in /public and update the CSS below:
+button, a, .win95-folder-item:hover, .win95-desktop-icon:hover {
+  cursor: url('/hand.cur'), pointer;
+}
+input, textarea, .win95-folder-item-text {
+  cursor: url('/ibeam.cur'), text;
+}
+*/
+
+button, a, .win95-folder-item:hover, .win95-desktop-icon:hover {
+  cursor: pointer;
+}
+
+input, textarea, .win95-folder-item-text {
+  cursor: text;
+}
+
+.win95-window-title, .win95-window {
+  cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur122.cur'), move;
+}
+
+.win95-window-resize-handle, .resize {
+  cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur123.cur'), nwse-resize;
+}
+
+.wait, .loading, .win95-loading {
+  cursor: url('https://cur.cursors-4u.net/cursors/cur-2/cur124.cur'), wait;
+}
+
+/* Swap these URLs for local .cur files if you add them to your public/fonts or public/cursors folder! */
+
+/* Performance and Accessibility Utilities */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles for better accessibility */
+*:focus {
+  outline: 2px solid #008CFF;
+  outline-offset: 2px;
+}
+
+/* Skip to main content link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #000;
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 1000;
+  border-radius: 4px;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Loading states */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .text-gray-400 {
+    color: #ffffff !important;
+  }
+  
+  .border-gray-800 {
+    border-color: #ffffff !important;
+  }
+}
+
+.iphone-header {
+  position: relative;
+  overflow: hidden;
+}
+.iphone-header::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 55%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.10) 100%);
+  pointer-events: none;
+  border-radius: 0 0 12px 12px;
+}
+
+.font-helvetica {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+.skeuo-bubble {
+  box-shadow: 0 1px 2px rgba(0,0,0,0.10), 0 1.5px 0 rgba(255,255,255,0.10) inset;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.35;
+}
+.skeuo-bubble-outgoing {
+  background: linear-gradient(180deg, #c6ef9c 0%, #a2d86c 60%, #7cc04b 100%);
+  color: #222;
+  border-radius: 16px;
+  border: 1px solid #6fa93c;
+  box-shadow: 0 1.5px 3px rgba(0,0,0,0.10), 0 1.5px 0 rgba(255,255,255,0.13) inset;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.35;
+}
+.skeuo-bubble-incoming {
+  background: linear-gradient(180deg, #f9f9fa 0%, #ececec 60%, #e0e0e3 100%);
+  color: #222;
+  border-radius: 16px;
+  border: 1px solid #bfc2c7;
+  box-shadow: 0 1.5px 3px rgba(0,0,0,0.08), 0 1.5px 0 rgba(255,255,255,0.10) inset;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.35;
+}
+.skeuo-bubble-text {
+  color: inherit;
+  font-family: inherit;
+}
+
+.calendar-day {
+  background: #f7f7fa;
+  border: none;
+  box-shadow: 0 1px 0 #e0e0e3 inset, 0 -1px 0 #e0e0e3 inset, 0 1.5px 4px rgba(0,0,0,0.04) inset;
+  border-radius: 10px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #444;
+  transition: box-shadow 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.calendar-day.today {
+  background: radial-gradient(circle at 60% 40%, #4da3ff 80%, #1976d2 100%);
+  color: #fff !important;
+  font-weight: bold;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px rgba(77,163,255,0.18) inset, 0 2px 12px 2px #4da3ff, 0 1.5px 8px rgba(25,118,210,0.22);
+  border: none;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.18), 0 0 8px #fff;
+  z-index: 1;
+}
+
+.calendar-header-bar {
+  background: linear-gradient(180deg, #3a4a63 0%, #6d83a1 100%);
+  border-bottom: 1.5px solid #2a3550;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.10) inset;
+  position: relative;
+}
+.calendar-header-title {
+  color: #fff;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.01em;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.18);
+}
+.calendar-nav-bar {
+  background: linear-gradient(180deg, #5a6b85 0%, #3a4a63 100%);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 1.5px 4px rgba(0,0,0,0.10) inset;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  height: 40px;
+  margin-bottom: 8px;
+}
+.calendar-nav-btn {
+  background: linear-gradient(180deg, #eaf1fa 0%, #b4bfce 100%);
+  border: 1px solid #7a8ca7;
+  border-radius: 8px;
+  box-shadow: 0 1.5px 2px rgba(255,255,255,0.18) inset, 0 1.5px 2px rgba(0,0,0,0.10);
+  color: #3a4a63;
+  font-size: 20px;
+  font-weight: bold;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: box-shadow 0.15s, border 0.15s;
+}
+.calendar-nav-btn:active {
+  box-shadow: 0 0 0 2px #7a8ca7 inset;
+}
+.calendar-nav-title {
+  flex: 1;
+  text-align: center;
+  color: #fff;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.18);
+}
+
+.calendar-day-header {
+  background: linear-gradient(180deg, #f9fafd 0%, #f1f3f7 100%);
+  color: #6d83a1;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  padding: 6px 0;
+  border-radius: 8px;
+  letter-spacing: 0.01em;
+  margin-bottom: 2px;
+}
+.calendar-event-summary {
+  background: linear-gradient(180deg, #f7fafd 0%, #e9eef5 100%);
+  box-shadow: 0 2px 12px 2px rgba(60,80,120,0.07), 0 1.5px 8px rgba(25,118,210,0.06);
+  border-radius: 12px;
+  padding: 18px 16px 14px 16px;
+  margin-top: 24px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #2a3550;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.calendar-event-summary h3 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #3a4a63;
+}
+
+.photos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 12px 8px 0 8px;
+}
+.photo-thumb {
+  background: #eaeaea;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(60,80,120,0.08), 0 1.5px 8px rgba(25,118,210,0.06);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.15s, border 0.15s;
+}
+.photo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.photos-album-title {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #3a4a63;
+  letter-spacing: 0.01em;
+  margin-bottom: 2px;
+}
+.photos-album-count {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #7a8ca7;
+  letter-spacing: 0.01em;
+}
+
+.skeuo-notes-header {
+  background: linear-gradient(180deg, #b48a5a 0%, #7c5a2a 100%);
+  box-shadow: 0 2px 8px rgba(60,40,20,0.18) inset, 0 1.5px 8px rgba(60,40,20,0.10);
+  border-bottom: 2.5px solid #6b4a1a;
+  position: relative;
+  overflow: hidden;
+}
+.skeuo-notes-header::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(90deg, transparent, transparent 6px, #e2c89a 7px, transparent 8px);
+  opacity: 0.18;
+  z-index: 1;
+}
+.skeuo-notes-header::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 6px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0.10) 100%);
+  z-index: 2;
+}
+.notes-header-title {
+  color: #fff;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.01em;
+  text-align: center;
+  position: relative;
+  z-index: 3;
+}
+.skeuo-notes-back-btn {
+  background: linear-gradient(180deg, #a07a4a 0%, #7c5a2a 100%);
+  border: 1.5px solid #6b4a1a;
+  box-shadow: 0 1.5px 4px rgba(60,40,20,0.10) inset, 0 1.5px 2px rgba(255,255,255,0.10);
+  border-radius: 8px;
+  z-index: 3;
+  transition: box-shadow 0.15s, border 0.15s;
+}
+.skeuo-notes-back-btn:active {
+  box-shadow: 0 0 0 2px #6b4a1a inset;
+}
+
+@media (max-width: 768px) {
+  .services-carousel,
+  .work-carousel {
+    display: flex !important;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 16px;
+    padding-bottom: 16px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+  }
+  .services-carousel > *,
+  .work-carousel > * {
+    flex: 0 0 80vw;
+    max-width: 80vw;
+    scroll-snap-align: start;
+    margin-right: 0;
+  }
+  .services-carousel > *:last-child,
+  .work-carousel > *:last-child {
+    margin-right: 0;
+  }
+  /* Gradient scroll cue */
+  .services-carousel::after,
+  .work-carousel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 32px;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(to left, rgba(0,0,0,0.7), rgba(0,0,0,0));
+    z-index: 2;
+  }
+}
+
+.pricing-toggle {
+  min-width: 300px;
+  max-width: 400px;
+  width: 100%;
+  height: 44px;
+  box-sizing: border-box;
+}
+.pricing-toggle button {
+  transition: color 0.2s, font-weight 0.2s;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pricing-toggle .z-0 {
+  z-index: 0 !important;
+}
+.pricing-toggle .z-10 {
+  z-index: 1 !important;
+}
+@media (max-width: 500px) {
+  .pricing-toggle {
+    min-width: 200px;
+    max-width: 95vw;
+    height: 38px;
+  }
+  .pricing-toggle button {
+    height: 34px;
+    font-size: 0.95rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+.footer-main-sections {
+  width: 100%;
+}
+@media (max-width: 767px) {
+  .footer-main-sections {
+    flex-direction: row !important;
+    display: flex !important;
+    gap: 16px !important;
+    flex-wrap: wrap !important;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-x: unset !important;
+    padding-bottom: 0;
+  }
+  .footer-main-sections > div {
+    min-width: 140px;
+    flex: 1 1 140px;
+    margin-bottom: 0 !important;
+  }
+  .footer-brand-block {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .brand-carousel-section {
+    padding-top: 1.25rem !important;
+    padding-bottom: 1.25rem !important;
+  }
+  .brand-carousel-logo {
+    height: 3.5rem !important; /* 56px, larger than md:h-16 */
+    margin-left: 1.25rem !important;
+    margin-right: 1.25rem !important;
+  }
+}
+
+/* Break section background fixes for mobile Safari */
+.break-section-bg {
+  background-attachment: fixed;
+}
+
+@media (max-width: 768px) {
+  .break-section-bg {
+    background-attachment: scroll !important;
+  }
+}
+
+/* Additional mobile Safari fixes for background images */
+@media (max-width: 768px) {
+  .break-section-bg {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
+}
+
+/* Safari-specific fixes for background images */
+@supports (-webkit-appearance: none) {
+  .break-section-bg {
+    -webkit-background-size: cover !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+  }
+}
+
+/* iPhone Safari specific fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 2) and (max-width: 768px) {
+  .break-section-bg {
+    background-attachment: scroll !important;
+    -webkit-background-size: cover !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+  }
+}
+
+/* Safari fixes for work card hover images */
+@supports (-webkit-appearance: none) {
+  .work-carousel img {
+    -webkit-object-fit: cover !important;
+    object-fit: cover !important;
+    -webkit-object-position: center !important;
+    object-position: center !important;
+  }
+}
+
+/* Additional Safari fixes for image rendering */
+@media screen and (-webkit-min-device-pixel-ratio: 2) {
+  .work-carousel img {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+}
+
+/* Safari-specific fixes for work card hover images */
+@supports (-webkit-appearance: none) {
+  .work-carousel .aspect-video {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .work-carousel .aspect-video img {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 8px !important;
+  }
+}
+
+/* Additional Safari fixes for absolute positioning */
+@media screen and (-webkit-min-device-pixel-ratio: 2) {
+  .work-carousel .aspect-video {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  
+  .work-carousel .aspect-video img {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 8px !important;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+}

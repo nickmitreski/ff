@@ -1,0 +1,154 @@
+/* iOS 1 Skeuomorphic Styles */
+
+/* Panel backgrounds */
+.skeuo-panel {
+  background: linear-gradient(135deg, #f7f7f7 0%, #d1d1d1 100%);
+  border: 1px solid #999;
+  border-radius: 8px;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.8),
+    inset 0 -1px 0 rgba(0,0,0,0.1),
+    0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Button styles */
+.skeuo-button {
+  background: linear-gradient(135deg, #4d4d4d 0%, #1a1a1a 100%);
+  border: 1px solid #333;
+  border-radius: 6px;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    inset 0 -1px 0 rgba(0,0,0,0.3),
+    0 1px 2px rgba(0,0,0,0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.skeuo-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.skeuo-button:active {
+  background: linear-gradient(135deg, #1a1a1a 0%, #4d4d4d 100%);
+  box-shadow: 
+    inset 0 1px 0 rgba(0,0,0,0.3),
+    inset 0 -1px 0 rgba(255,255,255,0.1);
+}
+
+/* Calculator specific */
+.calc-button {
+  width: 54px;
+  height: 54px;
+  background: linear-gradient(135deg, #4d4d4d 0%, #1a1a1a 100%);
+  border: 1px solid #333;
+  border-radius: 6px;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    inset 0 -1px 0 rgba(0,0,0,0.3),
+    0 1px 2px rgba(0,0,0,0.2);
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.calc-button.operator {
+  background: linear-gradient(135deg, #ff9500 0%, #ff8000 100%);
+  border-color: #e67300;
+}
+
+.calc-button.function {
+  background: linear-gradient(135deg, #a5a5a5 0%, #8a8a8a 100%);
+  border-color: #666;
+  color: black;
+}
+
+/* Calendar specific */
+.calendar-day {
+  background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.8),
+    inset 0 -1px 0 rgba(0,0,0,0.05);
+}
+
+.calendar-day.today {
+  background: linear-gradient(135deg, #fef7e6 0%, #f5e6b3 100%);
+  border-color: #ffd700;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    inset 0 -1px 0 rgba(0,0,0,0.1),
+    0 0 4px rgba(255,215,0,0.3);
+}
+
+/* Clock face */
+.clock-face {
+  background: radial-gradient(circle at center, #f8f8f8 0%, #e0e0e0 100%);
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.8),
+    inset 0 -1px 0 rgba(0,0,0,0.1),
+    0 4px 8px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.clock-face::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%);
+  border-radius: 50%;
+}
+
+/* Contacts list */
+.contact-row {
+  height: 44px;
+  background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
+  border-bottom: 1px solid #d8d8d8;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.8),
+    inset 0 -1px 0 rgba(0,0,0,0.05);
+}
+
+.contact-row:nth-child(even) {
+  background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+}
+
+/* Photos lightbox */
+.photos-overlay {
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+}
+
+/* Gloss effects */
+.gloss-overlay {
+  background: linear-gradient(60deg, rgba(255,255,255,0.2) 0%, transparent 50%, rgba(255,255,255,0.1) 100%);
+  pointer-events: none;
+}
+
+/* iOS 1 color palette */
+:root {
+  --ios-blue: #007aff;
+  --ios-green: #34c759;
+  --ios-red: #ff3b30;
+  --ios-orange: #ff9500;
+  --ios-yellow: #ffcc00;
+  --ios-purple: #af52de;
+  --ios-pink: #ff2d92;
+  --ios-gray: #8e8e93;
+  --ios-light-gray: #f2f2f7;
+  --ios-dark-gray: #1c1c1e;
+} 

@@ -1,0 +1,174 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Military Tower Defense</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="start-screen" id="start-screen">
+            <div class="start-content">
+                <img src="start-game.png" alt="Military Tower Defense" class="start-image">
+                <div class="start-overlay">
+                    <h1>MILITARY TOWER DEFENSE</h1>
+                    <p>Defend your base against waves of enemy forces</p>
+                    <button id="start-game-btn" class="start-btn">START GAME</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="wave-level-display" id="wave-level-display" style="display: none;">
+            <div class="display-content">
+                <img id="wave-level-image" src="" alt="" class="display-image">
+                <div class="display-overlay">
+                    <h2 id="wave-level-title"></h2>
+                    <p id="wave-level-subtitle"></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="difficulty-screen" id="difficulty-screen">
+            <div class="difficulty-content">
+                <h1>MILITARY TOWER DEFENSE</h1>
+                <h2>SELECT DIFFICULTY</h2>
+                <div class="difficulty-options">
+                    <button class="difficulty-btn" data-difficulty="easy">
+                        <div class="difficulty-title">RECRUIT</div>
+                        <div class="difficulty-desc">Enemies move slower, less health</div>
+                        <div class="difficulty-bonus">+50% money rewards</div>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="normal">
+                        <div class="difficulty-title">SOLDIER</div>
+                        <div class="difficulty-desc">Balanced gameplay</div>
+                        <div class="difficulty-bonus">Standard rewards</div>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="hard">
+                        <div class="difficulty-title">VETERAN</div>
+                        <div class="difficulty-desc">Enemies move faster, more health</div>
+                        <div class="difficulty-bonus">+100% money rewards</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-header">
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">Level:</span>
+                    <span id="level-display">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Health:</span>
+                    <span id="health-display">100</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Money:</span>
+                    <span id="money-display">500</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Wave:</span>
+                    <span id="wave-display">1/5</span>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="start-wave-btn" class="control-btn">START WAVE</button>
+                <button id="pause-btn" class="control-btn">PAUSE</button>
+                <button id="speed-btn" class="control-btn">SPEED x1</button>
+            </div>
+        </div>
+        
+        <div class="game-main">
+            <div class="tower-panel">
+                <h3>DEPLOY UNITS</h3>
+                <div class="tower-grid">
+                    <div class="tower-option" data-type="machinegun">
+                        <img src="machinegun-tower.png" alt="Machine Gun">
+                        <div class="tower-info">
+                            <div class="tower-name">Machine Gun</div>
+                            <div class="tower-cost">$100</div>
+                            <div class="tower-stats">DMG: 20 | RNG: 80</div>
+                        </div>
+                    </div>
+                    <div class="tower-option" data-type="sniper">
+                        <img src="sniper-tower.png" alt="Sniper">
+                        <div class="tower-info">
+                            <div class="tower-name">Sniper</div>
+                            <div class="tower-cost">$200</div>
+                            <div class="tower-stats">DMG: 100 | RNG: 200</div>
+                        </div>
+                    </div>
+                    <div class="tower-option" data-type="tank">
+                        <img src="rocket-tower.png" alt="Tank">
+                        <div class="tower-info">
+                            <div class="tower-name">Tank</div>
+                            <div class="tower-cost">$300</div>
+                            <div class="tower-stats">DMG: 200 | RNG: 120</div>
+                        </div>
+                    </div>
+                    <div class="tower-option" data-type="rocket">
+                        <img src="antiair-tower.png" alt="Rocket Launcher">
+                        <div class="tower-info">
+                            <div class="tower-name">Rocket</div>
+                            <div class="tower-cost">$400</div>
+                            <div class="tower-stats">DMG: 200 | RNG: 200</div>
+                        </div>
+                    </div>
+                    <div class="tower-option" data-type="artillery">
+                        <img src="artillery-tower.png" alt="Artillery">
+                        <div class="tower-info">
+                            <div class="tower-name">Artillery</div>
+                            <div class="tower-cost">$600</div>
+                            <div class="tower-stats">DMG: 300 | RNG: 250</div>
+                        </div>
+                    </div>
+                    <div class="tower-option" data-type="laser">
+                        <img src="laser-tower.png" alt="Laser Tower">
+                        <div class="tower-info">
+                            <div class="tower-name">Laser</div>
+                            <div class="tower-cost">$800</div>
+                            <div class="tower-stats">DMG: 400 | RNG: 180</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tower-upgrade" id="upgrade-panel" style="display: none;">
+                    <h3>UPGRADE UNIT</h3>
+                    <div id="selected-tower-info"></div>
+                    <button id="upgrade-btn" class="control-btn">UPGRADE</button>
+                    <button id="sell-btn" class="control-btn">SELL</button>
+                </div>
+            </div>
+            
+            <div class="game-area">
+                <canvas id="gameCanvas" width="800" height="600"></canvas>
+                <div class="game-overlay">
+                    <div id="level-complete" class="modal" style="display: none;">
+                        <div class="modal-content">
+                            <h2>LEVEL COMPLETE!</h2>
+                            <p>Bonus: $<span id="bonus-amount">0</span></p>
+                            <button id="next-level-btn" class="control-btn">NEXT LEVEL</button>
+                        </div>
+                    </div>
+                    <div id="game-over" class="modal" style="display: none;">
+                        <div class="modal-content">
+                            <h2>MISSION FAILED!</h2>
+                            <p>You reached Level <span id="final-level">1</span></p>
+                            <button id="restart-btn" class="control-btn">RESTART</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "howler": "https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"
+        }
+    }
+    </script>
+    <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "Flash Forward Digital",
+  "short_name": "Flash Forward",
+  "description": "We flash forward your business with modern web design, AI automation, branding & content creation",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#008CFF",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "en",
+  "orientation": "portrait-primary"
+} 
